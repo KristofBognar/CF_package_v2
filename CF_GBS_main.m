@@ -204,6 +204,7 @@ end
 %% 5) uncertaity estimation
 if (input_table.escape == false) | (step_number < 5)
     try
+        cd vs_Brewer
         % calculate uncertainties
         fig_title = 'BrewerDS vs GBS';
         gbs_vcd_type = 'normal';
@@ -257,7 +258,8 @@ end
 %% 6) save data
 gbs = data;
 brewer = brewer_all;
-
+cd(plot_path);
+cd vs_Brewer
 save('gbs_brewer.mat','gbs','brewer','EWS','gbs_brewer','gbscf_brewer','gbs_brewerzs','gbscf_brewerzs','VCD','VCD_CF','list_HQ_day','qdoas_filt','rcd_S','rcd_SCF','year','uncertainties');
 try
     email_notice('CODE SUCCESSFULLY FINISHED!');
