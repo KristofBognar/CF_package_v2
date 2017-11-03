@@ -23,7 +23,6 @@ plot(VCD_CF.fd,VCD_CF.mean_vcd./DU,'.');
 plot(VCD.fd,VCD.langley_vcd./DU,'x--');
 plot(VCD_CF.fd,VCD_CF.langley_vcd./DU,'x');
 legend('Brewer DS','Brewer ZS','GBS', 'GBS-CF', 'GBS (Langley)', 'GBS-CF (Langley)');
-ylabel('Ozone VCD [DU]');
-xlabel('day of the year');
+x
 cd(plot_path);
 print_setting(1/2,save_fig,['Timeserise_all']);
