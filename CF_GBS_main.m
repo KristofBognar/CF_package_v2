@@ -62,16 +62,23 @@ save_fig = input_table.save_fig;
 
 % if you want escape some steps, in the input file, set escape to true! use with caution!
 if input_table.escape == true
-    load([plot_path 'temp.mat']);
-    input_table.escape = true;
     try
-        disp('temp file loaded ... ');
-        disp(['CF package will start from Step: ' num2str(step_number + 1)]);
+        load([plot_path 'temp.mat']);
+        input_table.escape = true;
+        try
+            disp('temp file loaded ... ');
+            disp(['CF package will start from Step: ' num2str(step_number + 1)]);
+        catch
+            disp('Warning: temp file loading error/step number missing!');
+            disp('CF package will make a fresh run this time');
+            step_number = 0;
+            input_table.escape = false;
+        end
     catch
-        disp('Warning: temp file loading error/step number missing!');
+        disp('No temp.mat file found from the plot_path folder!');
         disp('CF package will make a fresh run this time');
-        step_number = 0;
         input_table.escape = false;
+        step_number = 0;
     end
 else
     disp('CF package will make a fresh run');
