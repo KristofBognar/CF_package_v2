@@ -151,10 +151,12 @@ if (input_table.escape == false) | (step_number < 3)
         
         % use VCD package to convert dSCDs to VCD
         [VCD,VCD_CF, dscd_S, dscd_SCF, rcd_S, rcd_SCF, avg_vcd, avg_vcdCF, qdoas_filt] = DSCD_to_VCD(year,VCD_code_path,plot_path,save_fig,QDOAS_data_dir,QDOAS_data_file,sonde);
-        
         cd(plot_path);
+        save('temp.mat');
+        
         % plot timeserise (brewer DS, ZS, and the instrument using this CF package)
         plot_timeserise(VCD,VCD_CF,brewer_all,plot_path,save_fig);
+        cd(plot_path);
         save('temp.mat');
         
         disp('>>> Step 3 finished');
