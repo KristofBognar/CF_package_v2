@@ -6,11 +6,13 @@ if load_raw_data == 1;
     %raw_data_folder = 'H:\work\Eureka\Eureka_weather_station\2010';
     %EWS_raw_data_folder = 'H:\work\Eureka\Eureka_weather_station\2011';
     cd(EWS_raw_data_folder);
-    file_list = ls;
-    N = size(file_list) - 2;
+    temp = dir;
+    file_list = {temp.name}; % cell array of file names
+    file_list(1:2)=[]; % ignore first 2 entries (. and ..)
+    N = length(file_list);
     EWS = table;
-    for i =1:1:N(1)
-        filename = file_list(i+2,:);
+    for i =1:1:N
+        filename = file_list{i};
         EWS_weather = importfile(filename);
         if ~isempty(EWS)
             EWS = [EWS;EWS_weather];
@@ -36,7 +38,7 @@ N = size(EWS);
 % clear level 1 = only "Clear" is clear weather
 % clear level 2 = "Clear" & "Mainly Clear" are both clear weather
 % clear level 3 = "Clear" & "Mainly Clear" & "Ice Crystals" are all clear weather
-for i = 1:1:N(1)
+for i = 1:1:N
     %if strcmp( EWS.Weather(i) , 'Clear' ) | strcmp( EWS.Weather(i) , 'Mainly Clear' );
     if strcmp( EWS.Weather(i) , 'Clear' ) ;
         EWS.Weather_simple_clearL1(i) = 0;
@@ -59,7 +61,7 @@ end
 
 % cloudy level 1 = only "Cloudy" is cloudy weather
 % cloudy level 2 = "Cloudy" & "Mostly Cloudy" are both cloudy weather
-for i = 1:1:N(1)
+for i = 1:1:N
     if strcmp( EWS.Weather(i) , 'Cloudy' ) ;
         EWS.Weather_simple_cloudyL1(i) = 1;
         EWS.Weather_simple_cloudyL2(i) = 1;

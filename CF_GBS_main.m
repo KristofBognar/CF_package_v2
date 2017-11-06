@@ -259,9 +259,9 @@ gbs = data;
 brewer = brewer_all;
 
 save('gbs_brewer.mat','gbs','brewer','EWS','gbs_brewer','gbscf_brewer','gbs_brewerzs','gbscf_brewerzs','VCD','VCD_CF','list_HQ_day','qdoas_filt','rcd_S','rcd_SCF','year','uncertainties');
-try
-    email_notice('CODE SUCCESSFULLY FINISHED!');
-catch
-    disp('CAN NOT SEND EMAIL, PLS CHECK SETTINGS IN "email_notice".');
-end
+% try
+%     email_notice('CODE SUCCESSFULLY FINISHED!');
+% catch
+%     disp('CAN NOT SEND EMAIL, PLS CHECK SETTINGS IN "email_notice".');
+% end
 close all;
