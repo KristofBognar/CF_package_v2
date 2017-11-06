@@ -213,7 +213,7 @@ end
 %% 5) uncertaity estimation
 if (input_table.escape == false) | (step_number < 5)
     try
-        cd vs_Brewer
+        cd([plot_path 'vs_Brewer'])
         % calculate uncertainties
         fig_title = 'BrewerDS vs GBS';
         gbs_vcd_type = 'normal';

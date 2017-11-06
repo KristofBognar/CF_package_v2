@@ -3,7 +3,7 @@ size = 1;
 %save_fig = 1;
 %fig_name = ['BrewerZS vs GBS'];
 %plot_path = 'H:\work\Eureka\GBS\CI\2011\UTGBS\vs_Brewer';
-plot_path = [plot_path '\vs_Brewer'];
+plot_path = [plot_path 'vs_Brewer'];
 mkdir(plot_path);
 cd(plot_path);
 DU = 2.69e16;
