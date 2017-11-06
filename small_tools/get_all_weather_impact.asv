@@ -2,7 +2,7 @@ function get_all_weather_impact()
 save_fig =1;
 DU = 2.6870e+16;
 %instrument = 'SAOZ';
-instrument = 'SAOZ';
+instrument = 'GBS';
 
 % Change the current folder to the folder of this m-file.
 if(~isdeployed)
@@ -83,11 +83,9 @@ final_table = final_table_concat;
 if strcmp(labels,'_daily')
     weathers = unique(final_table.weather_median);
     mean_delta_o3_table = grpstats(final_table_concat,'weather_median',{'mean','std'},'DataVars',{'mean_ColumnO3','delta_o3'});
-    mean_delta_o3_table = sortrows(mean_delta_o3_table,'weather_median');
 elseif strcmp(labels,'_ampm')
     weathers = unique(final_table.weather_median_ampm);
     mean_delta_o3_table = grpstats(final_table_concat,'weather_median_ampm',{'mean','std'},'DataVars',{'mean_ColumnO3','delta_o3'});
-    mean_delta_o3_table = sortrows(mean_delta_o3_table,'weather_median_ampm');
 end
 N_weathers = size(weathers);
 
@@ -132,9 +130,8 @@ figure;hold all;
 ax = gca;
 index = 1:1:N_weathers(1);
 x = index;
-%y = mean_delta_o3_table.mean_mean_delta_o3./mean_delta_o3_table.mean_mean_Brewer_o3.*100;
-y = mean_delta_o3_table.mean_delta_o3./mean_delta_o3_table.mean_mean_ColumnO3.*100;
-y_err = mean_delta_o3_table.std_delta_o3./mean_delta_o3_table.mean_mean_ColumnO3.*100;
+y = mean_delta_o3_table.mean_mean_delta_o3./mean_delta_o3_table.mean_mean_Brewer_o3.*100;
+y_err = mean_delta_o3_table.mean_std_delta_o3./mean_delta_o3_table.mean_mean_Brewer_o3.*100;
 bar(x,y);
 errorbar(x,y,y_err,'.');
 set(gca,'XTick',index);
