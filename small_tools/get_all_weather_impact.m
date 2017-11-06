@@ -62,18 +62,21 @@ end
 cd(concat_data_plot_path);
 
 
-mean_delta_o3_table = plot_get_all_weather_impact(mean_weather_concat,delta_o3_table_concat,final_table_concat,save_fig,'_daily');
-mean_delta_o3_table_ampm = plot_get_all_weather_impact(mean_weather_concat_ampm,delta_o3_table_concat_ampm,final_table_concat,save_fig,'_ampm');
+mean_delta_o3_table = plot_get_all_weather_impact(final_table_concat,save_fig,'_daily');
+mean_delta_o3_table_ampm = plot_get_all_weather_impact(final_table_concat,save_fig,'_ampm');
+try
+    mean_delta_o3_table_ref = plot_get_all_weather_impact(final_table_concat,save_fig,'_ref');
+catch
+end
 close all;
 %% save data
-save('weather_impact.mat','mean_delta_o3_table','mean_delta_o3_table_ampm','mean_weather_concat','delta_o3_table_concat','mean_weather_concat_ampm','delta_o3_table_concat_ampm','final_table_concat');
+save('weather_impact.mat','mean_delta_o3_table','mean_delta_o3_table_ampm','mean_delta_o3_table_ref','mean_weather_concat','delta_o3_table_concat','mean_weather_concat_ampm','delta_o3_table_concat_ampm','final_table_concat');
 
 
-function mean_delta_o3_table = plot_get_all_weather_impact(mean_weather_concat,delta_o3_table_concat,final_table_concat,save_fig,labels)
+function mean_delta_o3_table = plot_get_all_weather_impact(final_table_concat,save_fig,labels)
 DU = 2.6870e+16;
 %%
-mean_weather = mean_weather_concat;
-delta_o3_table = delta_o3_table_concat;
+
 final_table = final_table_concat;
 
 % weathers = unique(delta_o3_table.weather);
@@ -88,6 +91,10 @@ elseif strcmp(labels,'_ampm')
     weathers = unique(final_table.weather_median_ampm);
     mean_delta_o3_table = grpstats(final_table_concat,'weather_median_ampm',{'mean','std'},'DataVars',{'mean_ColumnO3','delta_o3'});
     mean_delta_o3_table = sortrows(mean_delta_o3_table,'weather_median_ampm');
+elseif strcmp(labels,'_ref')
+    weathers = unique(final_table.ref_weather);
+    mean_delta_o3_table = grpstats(final_table_concat,'ref_weather',{'mean','std'},'DataVars',{'mean_ColumnO3','delta_o3'});
+    mean_delta_o3_table = sortrows(mean_delta_o3_table,'ref_weather');
 end
 N_weathers = size(weathers);
 

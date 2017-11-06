@@ -168,12 +168,64 @@ mean_weather_ampm.total_obs_hrs_ampm = total_obs_hrs_ampm';
 new_table = table;
 j = 1;
 N_gbs_brewer = size(gbs_brewer);
+TF_ref_time_exist = strcmp('ref_time1',gbs_brewer.Properties.VariableNames);
+if sum(TF_ref_time_exist) == 0
+    disp('No reference spec time was found! Will not search weather record for ref spec.');
+end
 for i=1:1:N_gbs_brewer
     TF = gbs_brewer(i,:).day == mean_weather.DoY;
     TF_ampm = (gbs_brewer(i,:).day == mean_weather_ampm.DoY_ampm) & (gbs_brewer(i,:).ampm == mean_weather_ampm.EWS_ampm);
-    if sum(TF) > 0
-        new_table(j,:) = [gbs_brewer(i,:),mean_weather(TF,:),mean_weather_ampm(TF_ampm,:)];
-        j = j + 1;
+    
+    
+    if sum(TF_ref_time_exist) > 0
+        ref_time1 = datetime(datevec(gbs_brewer.ref_sza_utc1));
+        ref_time2 = datetime(datevec(gbs_brewer.ref_sza_utc2));
+        TF_ref1_isnat = isnat(ref_time1);
+        ref_time1(TF_ref1_isnat,:) = ref_time2(TF_ref1_isnat,:);
+
+        UTC_offset = 5;
+        EWS_ref_weather = table;
+        TF_ref = (gbs_brewer(i,:).day == EWS.DoY) & (ref_time1(i,:).Hour -UTC_offset == EWS.datetime.Hour);
+        if sum(TF_ref) == 1
+            EWS_ref_weather.ref_weather = EWS.Weather(TF_ref,:);
+            EWS_ref_weather.ref_datetime_in_EWS =  EWS.datetime(TF_ref,:);
+        elseif sum(TF_ref) == 0
+            disp('Warning: no weather record was found match with time of ref sepc');
+            disp('Warning: will try to find record in +1 hr');
+            TF_ref = (gbs_brewer(i,:).day == EWS.DoY) & (ref_time1(i,:).Hour -UTC_offset +1 == EWS.datetime.Hour);
+            if sum(TF_ref) == 1
+                EWS_ref_weather.ref_weather = EWS.Weather(TF_ref,:);
+                EWS_ref_weather.ref_datetime_in_EWS =  EWS.datetime(TF_ref,:);
+            elseif sum(TF_ref) == 0
+                disp('Warning: no weather record was found match with time of ref sepc + 1hr');
+                disp('Warning: will try to find record in -1 hr');
+                TF_ref = (gbs_brewer(i,:).day == EWS.DoY) & (ref_time1(i,:).Hour -UTC_offset -1 == EWS.datetime.Hour);
+                if sum(TF_ref) == 1
+                    EWS_ref_weather.ref_weather = EWS.Weather(TF_ref,:); 
+                    EWS_ref_weather.ref_datetime_in_EWS =  EWS.datetime(TF_ref,:);
+                elseif sum(TF_ref) == 0
+                    disp('Warning: no weather record was found match with time of ref sepc +/- 1hr');
+                    disp('Warning: will just place NaN in there!');
+                    EWS_ref_weather.ref_weather = 'NaN'; 
+                    EWS_ref_weather.ref_datetime_in_EWS =  'NaT';
+                end
+            end
+        end
+    else
+        %disp('No reference spec time was found! Will not search weather record for ref spec.');
+    end
+
+        
+    if sum(TF_ref_time_exist) > 0
+        if (sum(TF) > 0) & (sum(TF_ampm) > 0) & (sum(TF_ref) > 0) 
+            new_table(j,:) = [gbs_brewer(i,:),mean_weather(TF,:),mean_weather_ampm(TF_ampm,:), EWS_ref_weather];
+            j = j + 1;
+        end
+    else
+        if (sum(TF) > 0) & (sum(TF_ampm) > 0)
+            new_table(j,:) = [gbs_brewer(i,:),mean_weather(TF,:),mean_weather_ampm(TF_ampm,:)];
+            j = j + 1;
+        end
     end
 end
 
