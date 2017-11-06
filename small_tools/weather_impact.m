@@ -1,16 +1,23 @@
 function [mean_weather,delta_o3_table,final_table] =weather_impact(mode,CF_temp_file,weather_impact_plot_path,save_fig)
+
+% Change the current folder to the folder of this m-file.
+if(~isdeployed)
+  cd(fileparts(which(mfilename)));
+end
+
 addpath('E:\F\Work\MatlabCode');
 if nargin == 0
     mode = 1;
 end
 if mode == 1 % use code locally
     %load('E:\H\work\Eureka\GBS\CI\2010\CF_450_550_minCI_v2_VCDcodev2_rerun\temp.mat');
-    load('E:\H\work\Eureka\GBS\CI\2011\CF_450_550_minCI_v2_VCDcodev2\temp.mat');
+    %load('E:\H\work\Eureka\GBS\CI\2011\CF_450_550_minCI_v2_VCDcodev2\temp.mat');
+    load('E:\H\work\Eureka\GBS\CI\2014\CF_450_550_minCI_v2_VCDcodeonGit_test\temp.mat');
 
     save_fig = 1;
     
     %plot_path = 'E:\H\work\Eureka\GBS\CI\2010\weather_inpact\'
-    weather_impact_plot_path = 'E:\H\work\Eureka\GBS\CI\2011\weather_inpact\'
+    weather_impact_plot_path = 'E:\H\work\Eureka\GBS\CI\2014\weather_inpact\'
 elseif mode == 2 % call by other function
     try
         load([CF_temp_file '\temp.mat']);

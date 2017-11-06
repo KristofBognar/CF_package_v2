@@ -2,6 +2,12 @@ function get_all_weather_impact()
 save_fig =1;
 DU = 2.6870e+16;
 instrument = 'SAOZ';
+
+% Change the current folder to the folder of this m-file.
+if(~isdeployed)
+  cd(fileparts(which(mfilename)));
+end
+
 if strcmp(instrument , 'GBS')
     concat_data_plot_path = 'E:\H\work\Eureka\GBS\CI\weather_impact\';
     mkdir(concat_data_plot_path);

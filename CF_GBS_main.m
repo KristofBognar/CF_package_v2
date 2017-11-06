@@ -62,16 +62,23 @@ save_fig = input_table.save_fig;
 
 % if you want escape some steps, in the input file, set escape to true! use with caution!
 if input_table.escape == true
-    load([plot_path 'temp.mat']);
-    input_table.escape = true;
     try
-        disp('temp file loaded ... ');
-        disp(['CF package will start from Step: ' num2str(step_number + 1)]);
+        load([plot_path 'temp.mat']);
+        input_table.escape = true;
+        try
+            disp('temp file loaded ... ');
+            disp(['CF package will start from Step: ' num2str(step_number + 1)]);
+        catch
+            disp('Warning: temp file loading error/step number missing!');
+            disp('CF package will make a fresh run this time');
+            step_number = 0;
+            input_table.escape = false;
+        end
     catch
-        disp('Warning: temp file loading error/step number missing!');
+        disp('No temp.mat file found from the plot_path folder!');
         disp('CF package will make a fresh run this time');
-        step_number = 0;
         input_table.escape = false;
+        step_number = 0;
     end
 else
     disp('CF package will make a fresh run');
@@ -144,10 +151,12 @@ if (input_table.escape == false) | (step_number < 3)
         
         % use VCD package to convert dSCDs to VCD
         [VCD,VCD_CF, dscd_S, dscd_SCF, rcd_S, rcd_SCF, avg_vcd, avg_vcdCF, qdoas_filt] = DSCD_to_VCD(year,VCD_code_path,plot_path,save_fig,QDOAS_data_dir,QDOAS_data_file,sonde);
-        
         cd(plot_path);
+        save('temp.mat');
+        
         % plot timeserise (brewer DS, ZS, and the instrument using this CF package)
         plot_timeserise(VCD,VCD_CF,brewer_all,plot_path,save_fig);
+        cd(plot_path);
         save('temp.mat');
         
         disp('>>> Step 3 finished');
@@ -204,6 +213,7 @@ end
 %% 5) uncertaity estimation
 if (input_table.escape == false) | (step_number < 5)
     try
+        cd vs_Brewer
         % calculate uncertainties
         fig_title = 'BrewerDS vs GBS';
         gbs_vcd_type = 'normal';
@@ -257,7 +267,8 @@ end
 %% 6) save data
 gbs = data;
 brewer = brewer_all;
-
+cd(plot_path);
+cd vs_Brewer
 save('gbs_brewer.mat','gbs','brewer','EWS','gbs_brewer','gbscf_brewer','gbs_brewerzs','gbscf_brewerzs','VCD','VCD_CF','list_HQ_day','qdoas_filt','rcd_S','rcd_SCF','year','uncertainties');
 % try
 %     email_notice('CODE SUCCESSFULLY FINISHED!');
