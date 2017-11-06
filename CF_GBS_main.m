@@ -150,7 +150,7 @@ if (input_table.escape == false) | (step_number < 3)
         QDOAS_data_file = 'dSCDs_CF.mat';
         
         % use VCD package to convert dSCDs to VCD
-        [VCD,VCD_CF, dscd_S, dscd_SCF, rcd_S, rcd_SCF, avg_vcd, avg_vcdCF, qdoas_filt] = DSCD_to_VCD(year,VCD_code_path,plot_path,save_fig,QDOAS_data_dir,QDOAS_data_file,sonde);
+        [VCD, dscd_S, rcd_S, avg_vcd, qdoas_filt, VCD_CF, dscd_SCF, rcd_SCF, avg_vcdCF] = DSCD_to_VCD(year,VCD_code_path,plot_path,save_fig,QDOAS_data_dir,QDOAS_data_file,sonde);
         cd(plot_path);
         save('temp.mat');
         
