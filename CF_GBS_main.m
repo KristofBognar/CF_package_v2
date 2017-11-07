@@ -68,6 +68,10 @@ if input_table.escape == true
         try
             disp('temp file loaded ... ');
             disp(['CF package will start from Step: ' num2str(step_number + 1)]);
+            % step_number = 4; % if need "re-run" start from a specified
+            % step, pls note, step_number is the step that has been
+            % finished. So, if you want start from step 4, you need set
+            % step_number = 3
         catch
             disp('Warning: temp file loading error/step number missing!');
             disp('CF package will make a fresh run this time');
