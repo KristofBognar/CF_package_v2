@@ -12,7 +12,14 @@ DU=2.69e16;
 data = gbs_brewer;
 if ~istable(data)
     disp('Can not estimate uncertainties: No Brewer measurements found conincident with GBS measurements!');
-    uncertainties = 0;
+    %uncertainties = 0;
+    uncertainties = table;
+    uncertainties.u_GBS = -9999;
+    uncertainties.pu_GBS = -9999;
+    uncertainties.u_Brewer = -9999;
+    uncertainties.pu_Brewer = -9999;
+    uncertainties.u_X = -9999;
+    uncertainties.pu_X = -9999;
 else
     if strcmp(gbs_vcd_type,'normal')
         M1 = data.mean_vcd./DU; % GBS TCO using our normal routine (RCD -> VCDs -> mean VCD)

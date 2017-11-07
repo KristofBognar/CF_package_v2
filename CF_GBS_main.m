@@ -213,7 +213,7 @@ end
 %% 5) uncertaity estimation
 if (input_table.escape == false) | (step_number < 5)
     try
-        cd vs_Brewer
+        cd([input_table.plot_path 'vs_Brewer']);
         % calculate uncertainties
         fig_title = 'BrewerDS vs GBS';
         gbs_vcd_type = 'normal';
@@ -239,7 +239,7 @@ if (input_table.escape == false) | (step_number < 5)
         gbs_vcd_type = 'langley';
         uncertainties_gbsl_brewerzs = uncertainty_v3(gbs_brewerzs,gbs_vcd_type,save_fig,fig_title);
 
-         fig_title = 'BrewerZS vs GBS-CF';
+        fig_title = 'BrewerZS vs GBS-CF';
         gbs_vcd_type = 'normal';
         uncertainties_gbscf_brewerzs = uncertainty_v3(gbscf_brewerzs,gbs_vcd_type,save_fig,fig_title);
 
@@ -248,6 +248,7 @@ if (input_table.escape == false) | (step_number < 5)
         uncertainties_gbscfl_brewerzs = uncertainty_v3(gbscf_brewerzs,gbs_vcd_type,save_fig,fig_title);
 
         uncertainties = [uncertainties_gbs_brewer;uncertainties_gbscf_brewer;uncertainties_gbs_brewerzs;uncertainties_gbscf_brewerzs;uncertainties_gbsl_brewer;uncertainties_gbscfl_brewer;uncertainties_gbsl_brewerzs;uncertainties_gbscfl_brewerzs];
+        uncertainties.Properties.RowNames = {'gbs_brewer','gbscf_brewer','gbs_brewerzs','gbscf_brewerzs','gbsl_brewer','gbscfl_brewer','gbsl_brewerzs','gbscfl_brewerzs'};
         
         disp('>>> Step 5 finished');
         step_number = 5;
