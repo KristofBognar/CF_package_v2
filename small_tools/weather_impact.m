@@ -13,12 +13,14 @@ if mode == 1 % use code locally
     %load('E:\H\work\Eureka\GBS\CI\2010\CF_450_550_minCI_v2_VCDcodev2_rerun\temp.mat');
     %load('E:\H\work\Eureka\GBS\CI\2011\CF_450_550_minCI_v2_VCDcodev2\temp.mat');
     %load('E:\H\work\Eureka\GBS\CI\2014\CF_450_550_minCI_v2_VCDcodeonGit_test\temp.mat');
-    load('E:\H\work\Eureka\GBS\CI\2011\CF_VCD_CF_onGit_test2\temp.mat');
-
+    %load('E:\H\work\Eureka\GBS\CI\2011\CF_VCD_CF_onGit_test2\temp.mat');
+    temp_file_path = 'E:\H\work\Eureka\GBS\CI\2010\CF_newLangely\';
+    load([temp_file_path 'temp.mat']);
+    cd(temp_file_path);
     save_fig = 1;
     
     %plot_path = 'E:\H\work\Eureka\GBS\CI\2010\weather_impact\'
-    weather_impact_plot_path = 'E:\H\work\Eureka\GBS\CI\2011\weather_impact\'
+    weather_impact_plot_path = [temp_file_path 'weather_impact\'];
 elseif mode == 2 % call by other function
     try
         load([CF_temp_file '\temp.mat']);
@@ -168,7 +170,7 @@ mean_weather_ampm.total_obs_hrs_ampm = total_obs_hrs_ampm';
 new_table = table;
 j = 1;
 N_gbs_brewer = size(gbs_brewer);
-TF_ref_time_exist = strcmp('ref_time1',gbs_brewer.Properties.VariableNames);
+TF_ref_time_exist = strcmp('ref_sza_utc1',gbs_brewer.Properties.VariableNames);
 if sum(TF_ref_time_exist) == 0
     disp('No reference spec time was found! Will not search weather record for ref spec.');
 end
@@ -191,6 +193,7 @@ for i=1:1:N_gbs_brewer
             EWS_ref_weather.ref_datetime_in_EWS =  EWS.datetime(TF_ref,:);
         elseif sum(TF_ref) == 0
             disp('Warning: no weather record was found match with time of ref sepc');
+            disp(['Year:' num2str(gbs_brewer(i,:).year) '; Day:' num2str(gbs_brewer(i,:).day)]);
             disp('Warning: will try to find record in +1 hr');
             TF_ref = (gbs_brewer(i,:).day == EWS.DoY) & (ref_time1(i,:).Hour -UTC_offset +1 == EWS.datetime.Hour);
             if sum(TF_ref) == 1
@@ -208,6 +211,7 @@ for i=1:1:N_gbs_brewer
                     disp('Warning: will just place NaN in there!');
                     EWS_ref_weather.ref_weather = 'NaN'; 
                     EWS_ref_weather.ref_datetime_in_EWS =  'NaT';
+                    
                 end
             end
         end
