@@ -68,6 +68,10 @@ if input_table.escape == true
         try
             disp('temp file loaded ... ');
             disp(['CF package will start from Step: ' num2str(step_number + 1)]);
+            % step_number = 4; % if need "re-run" start from a specified
+            % step, pls note, step_number is the step that has been
+            % finished. So, if you want start from step 4, you need set
+            % step_number = 3
         catch
             disp('Warning: temp file loading error/step number missing!');
             disp('CF package will make a fresh run this time');
@@ -149,8 +153,10 @@ if (input_table.escape == false) | (step_number < 3)
         QDOAS_data_dir = plot_path;
         QDOAS_data_file = 'dSCDs_CF.mat';
         
+
         % use VCD package to convert dSCDs to VCD
         [VCD, dscd_S, rcd_S, avg_vcd, qdoas_filt, VCD_CF, dscd_SCF, rcd_SCF, avg_vcdCF] = DSCD_to_VCD(year,VCD_code_path,plot_path,save_fig,QDOAS_data_dir,QDOAS_data_file,sonde);
+
         cd(plot_path);
         save('temp.mat');
         
@@ -213,7 +219,9 @@ end
 %% 5) uncertaity estimation
 if (input_table.escape == false) | (step_number < 5)
     try
+
         cd([plot_path 'vs_Brewer'])
+
         % calculate uncertainties
         fig_title = 'BrewerDS vs GBS';
         gbs_vcd_type = 'normal';
@@ -239,7 +247,7 @@ if (input_table.escape == false) | (step_number < 5)
         gbs_vcd_type = 'langley';
         uncertainties_gbsl_brewerzs = uncertainty_v3(gbs_brewerzs,gbs_vcd_type,save_fig,fig_title);
 
-         fig_title = 'BrewerZS vs GBS-CF';
+        fig_title = 'BrewerZS vs GBS-CF';
         gbs_vcd_type = 'normal';
         uncertainties_gbscf_brewerzs = uncertainty_v3(gbscf_brewerzs,gbs_vcd_type,save_fig,fig_title);
 
@@ -248,6 +256,7 @@ if (input_table.escape == false) | (step_number < 5)
         uncertainties_gbscfl_brewerzs = uncertainty_v3(gbscf_brewerzs,gbs_vcd_type,save_fig,fig_title);
 
         uncertainties = [uncertainties_gbs_brewer;uncertainties_gbscf_brewer;uncertainties_gbs_brewerzs;uncertainties_gbscf_brewerzs;uncertainties_gbsl_brewer;uncertainties_gbscfl_brewer;uncertainties_gbsl_brewerzs;uncertainties_gbscfl_brewerzs];
+        uncertainties.Properties.RowNames = {'gbs_brewer','gbscf_brewer','gbs_brewerzs','gbscf_brewerzs','gbsl_brewer','gbscfl_brewer','gbsl_brewerzs','gbscfl_brewerzs'};
         
         disp('>>> Step 5 finished');
         step_number = 5;
