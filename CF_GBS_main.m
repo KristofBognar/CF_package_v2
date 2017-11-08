@@ -153,7 +153,10 @@ if (input_table.escape == false) | (step_number < 3)
         QDOAS_data_dir = plot_path;
         QDOAS_data_file = 'dSCDs_CF.mat';
         
-        [VCD,VCD_CF, dscd_S, dscd_SCF, rcd_S, rcd_SCF, avg_vcd, avg_vcdCF, qdoas_filt] = DSCD_to_VCD(year,VCD_code_path,plot_path,save_fig,QDOAS_data_dir,QDOAS_data_file,sonde);
+
+        % use VCD package to convert dSCDs to VCD
+        [VCD, dscd_S, rcd_S, avg_vcd, qdoas_filt, VCD_CF, dscd_SCF, rcd_SCF, avg_vcdCF] = DSCD_to_VCD(year,VCD_code_path,plot_path,save_fig,QDOAS_data_dir,QDOAS_data_file,sonde);
+
         cd(plot_path);
         save('temp.mat');
         
@@ -216,7 +219,9 @@ end
 %% 5) uncertaity estimation
 if (input_table.escape == false) | (step_number < 5)
     try
-        cd([input_table.plot_path 'vs_Brewer']);
+
+        cd([plot_path 'vs_Brewer'])
+
         % calculate uncertainties
         fig_title = 'BrewerDS vs GBS';
         gbs_vcd_type = 'normal';
@@ -274,9 +279,9 @@ brewer = brewer_all;
 cd(plot_path);
 cd vs_Brewer
 save('gbs_brewer.mat','gbs','brewer','EWS','gbs_brewer','gbscf_brewer','gbs_brewerzs','gbscf_brewerzs','VCD','VCD_CF','list_HQ_day','qdoas_filt','rcd_S','rcd_SCF','year','uncertainties');
-try
-    email_notice('CODE SUCCESSFULLY FINISHED!');
-catch
-    disp('CAN NOT SEND EMAIL, PLS CHECK SETTINGS IN "email_notice".');
-end
+% try
+%     email_notice('CODE SUCCESSFULLY FINISHED!');
+% catch
+%     disp('CAN NOT SEND EMAIL, PLS CHECK SETTINGS IN "email_notice".');
+% end
 close all;
