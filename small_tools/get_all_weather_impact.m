@@ -1,46 +1,78 @@
-function get_all_weather_impact()
-save_fig =1;
-DU = 2.6870e+16;
-%instrument = 'SAOZ';
-instrument = 'SAOZ';
+function get_all_weather_impact(mode)
+%% by Xiaoyi 2017-11-08
+% this function can concatinate all weather impact results from "weather_impact.m"
+% 1) if want manually input file pathes, fill the mode 1 part
+% then just run "get_all_weather_impact(1)"
+% 2) if provide inputs in the "CF_input_file_smalltools.txt"
+% then run "get_all_weather_impact(2)"
 
-% Change the current folder to the folder of this m-file.
-if(~isdeployed)
-  cd(fileparts(which(mfilename)));
+% mode = 1, use local inputs from mode 1
+% mode = 2, use inputs from "CF_input_file_smalltools.txt"
+
+if nargin == 0
+    mode = 1;
 end
 
-if strcmp(instrument , 'GBS')
-    concat_data_plot_path = 'E:\H\work\Eureka\GBS\CI\weather_impact\';
-    mkdir(concat_data_plot_path);
-    % load data from the following folders
-    % 2016-2017 EWS record has some issue, all weather column shows 'NA', need
-    % figure out what happend
-    CF_temp_files{1,:} = ['E:\H\work\Eureka\GBS\CI\2010\CF_450_550_minCI_v2_VCDcodev2_rerun'];
-    CF_temp_files{2,:} = ['E:\H\work\Eureka\GBS\CI\2011\CF_450_550_minCI_v2_VCDcodev2'];
-    CF_temp_files{3,:} = ['E:\H\work\Eureka\GBS\CI\2013\CF_450_550_minCI_v2'];
-    CF_temp_files{4,:} = ['E:\H\work\Eureka\GBS\CI\2014\CF_450_550_minCI'];
-    CF_temp_files{5,:} = ['E:\H\work\Eureka\GBS\CI\2015\CF_450_550_minCI'];
-    % CF_temp_files{6,:} = ['E:\H\work\Eureka\GBS\CI\2016\CF_450_550_minCI_v2_VCDcodev2'];
-elseif strcmp(instrument , 'SAOZ')
-    concat_data_plot_path = 'E:\H\work\Eureka\SAOZ\weather_impact\';
-    mkdir(concat_data_plot_path);
-    CF_temp_files{1,:} = ['E:\H\work\Eureka\SAOZ\2011\CF_450_550_minCI_fixref'];
-    CF_temp_files{2,:} = ['E:\H\work\Eureka\SAOZ\2013\CF_450_550_minCI_v2_fixref'];
-    CF_temp_files{3,:} = ['E:\H\work\Eureka\SAOZ\2014\CF_450_550_minCI_v2_fixref'];
-    CF_temp_files{4,:} = ['E:\H\work\Eureka\SAOZ\2015\CF_450_550_minCI_v2_fixref'];
+if mode == 1
+    % use local inputs here
+    save_fig =1; % save fig or not, 1 = yes, 0 = no
+    instrument = 'SAOZ'; % instrument name str
+    table_nm = 'gbs_brewer'; % the table we want work on  
+    if strcmp(instrument , 'GBS')
+        concat_data_plot_path = 'E:\H\work\Eureka\GBS\CI\weather_impact\';% file path used to save final concatinated data and figrues
+        % load data from the following folders
+        % 2016-2017 EWS record has some issue, all weather column shows 'NA', need
+        % figure out what happend
+        CF_temp_files{1,:} = ['E:\H\work\Eureka\GBS\CI\2010\CF_450_550_minCI_v2_VCDcodev2_rerun\'];
+        CF_temp_files{2,:} = ['E:\H\work\Eureka\GBS\CI\2011\CF_450_550_minCI_v2_VCDcodev2\'];
+        CF_temp_files{3,:} = ['E:\H\work\Eureka\GBS\CI\2013\CF_450_550_minCI_v2\'];
+        CF_temp_files{4,:} = ['E:\H\work\Eureka\GBS\CI\2014\CF_450_550_minCI\'];
+        CF_temp_files{5,:} = ['E:\H\work\Eureka\GBS\CI\2015\CF_450_550_minCI\'];
+        % CF_temp_files{6,:} = ['E:\H\work\Eureka\GBS\CI\2016\CF_450_550_minCI_v2_VCDcodev2\'];
+    elseif strcmp(instrument , 'SAOZ')
+        concat_data_plot_path = 'E:\H\work\Eureka\SAOZ\weather_impact\'; % file path used to save final concatinated data and figrues
+        CF_temp_files{1,:} = ['E:\H\work\Eureka\SAOZ\2011\CF_450_550_minCI_fixref\'];
+        CF_temp_files{2,:} = ['E:\H\work\Eureka\SAOZ\2013\CF_450_550_minCI_v2_fixref\'];
+        CF_temp_files{3,:} = ['E:\H\work\Eureka\SAOZ\2014\CF_450_550_minCI_v2_fixref\'];
+        CF_temp_files{4,:} = ['E:\H\work\Eureka\SAOZ\2015\CF_450_550_minCI_v2_fixref\'];
+    end
+else
+    % use settings from input file
+    % Change the current folder to the folder of this m-file.
+    if(~isdeployed)
+      cd(fileparts(which(mfilename)));
+      cd ..
+      addpath(pwd);
+    end
+    input_table = read_input_file_smalltools();
     
-    %CF_temp_files{6,:} = ['E:\H\work\Eureka\SAOZ\2016\CF_450_550_minCI_v2_VCDcodev2_rerun_fixref']
+    % interpret inputs from input_table
+    save_fig = input_table.save_fig; 
+    instrument = input_table.instrument;
+    table_nm = input_table.table_nm;
+    concat_data_plot_path = input_table.concat_data_plot_path;
+    general_file_path = input_table.general_file_path;
+    temp_file_folder = input_table.temp_file_folder;
+    years = input_table.years;
+    
+    N = size(years);
+    for i = 1:1:N(2)
+        CF_temp_files{i,:} = [general_file_path num2str(years(i)) '/' temp_file_folder];
+    end
 end
+
+mkdir(concat_data_plot_path);
+
 %%
+DU = 2.6870e+16;
 N_files = size(CF_temp_files);
 for i = 1:1:N_files(1)
     cd(CF_temp_files{i});
-    %cd(cell2mat(CF_temp_files{i}))
-    cd ..
-    weather_impact_plot_path = [pwd '\weather_impact'];
+    weather_impact_plot_path = [pwd '/weather_impact'];
     try
         %[mean_weather,delta_o3_table,final_table] = weather_impact(2,CF_temp_files{i},weather_impact_plot_path,save_fig);
-        [mean_weather,mean_weather_ampm,delta_o3_table,delta_o3_table_ampm,final_table] = weather_impact(2,CF_temp_files{i},weather_impact_plot_path,save_fig);
+        disp(['Working on year: ' num2str(years(i))]);
+        [mean_weather,mean_weather_ampm,delta_o3_table,delta_o3_table_ampm,final_table] = weather_impact(2,table_nm,CF_temp_files{i},weather_impact_plot_path,save_fig);
     catch 
         disp(['no results from file: ' num2str(i)]);
     end
@@ -62,18 +94,22 @@ end
 cd(concat_data_plot_path);
 
 
-mean_delta_o3_table = plot_get_all_weather_impact(final_table_concat,save_fig,'_daily');
-mean_delta_o3_table_ampm = plot_get_all_weather_impact(final_table_concat,save_fig,'_ampm');
+mean_delta_o3_table = plot_get_all_weather_impact(instrument,final_table_concat,save_fig,'_daily');
+mean_delta_o3_table_ampm = plot_get_all_weather_impact(instrument,final_table_concat,save_fig,'_ampm');
 try
     mean_delta_o3_table_ref = plot_get_all_weather_impact(final_table_concat,save_fig,'_ref');
 catch
 end
 close all;
 %% save data
-save('weather_impact.mat','mean_delta_o3_table','mean_delta_o3_table_ampm','mean_delta_o3_table_ref','mean_weather_concat','delta_o3_table_concat','mean_weather_concat_ampm','delta_o3_table_concat_ampm','final_table_concat');
+try
+    save('weather_impact.mat','mean_delta_o3_table','mean_delta_o3_table_ampm','mean_delta_o3_table_ref','mean_weather_concat','delta_o3_table_concat','mean_weather_concat_ampm','delta_o3_table_concat_ampm','final_table_concat');
+catch
+    save('weather_impact.mat','mean_delta_o3_table','mean_delta_o3_table_ampm','mean_weather_concat','delta_o3_table_concat','mean_weather_concat_ampm','delta_o3_table_concat_ampm','final_table_concat');
+end
 
 
-function mean_delta_o3_table = plot_get_all_weather_impact(final_table_concat,save_fig,labels)
+function mean_delta_o3_table = plot_get_all_weather_impact(instrument,final_table_concat,save_fig,labels)
 DU = 2.6870e+16;
 %%
 
@@ -118,7 +154,7 @@ set(gca,'XTickLabel',str2mat(mean_delta_o3_table.Properties.RowNames));
 xmax = N_weathers(1) + 1;
 xlim([0 xmax]);
 xlabel('EWS reported weather');
-ylabel('Delta (GBS-Brewer) Ozone VCD [DU]');
+ylabel(['Delta (' instrument '-Brewer) Ozone VCD [DU]']);
 print_setting('narrow2',save_fig,['Delta_o3_vcd' labels]);
 %% figure 1.1, 
 figure;
@@ -150,7 +186,7 @@ set(gca,'XTickLabel',str2mat(mean_delta_o3_table.Properties.RowNames));
 xmax = N_weathers(1) + 1;
 xlim([0 xmax]);
 xlabel('EWS reported weather');
-ylabel('Delta (GBS-Brewer) Ozone VCD [%]');
+ylabel(['Delta (' instrument '-Brewer) Ozone VCD [%]']);
 print_setting('narrow2',save_fig,['Delta_percentage_o3_vcd' labels]);
 %% figure 2,
 figure;
@@ -161,7 +197,7 @@ auto_legend = [str2mat(mean_delta_o3_table.Properties.RowNames)];
 legend(auto_legend);
 plot(new_table.fd,new_table.mean_vcd./DU,'s');
 plot(new_table.fd,new_table.mean_ColumnO3,'x');
-textbp('s: GBS; x: Brewer');
+textbp(['s: ' instrument '; x: Brewer']);
 xlabel('fractional day of the year');
 ylabel('Ozone VCD [DU]');
 print_setting('narrow2',save_fig,['O3_timeserise_with_weather_info' labels]);
@@ -174,7 +210,7 @@ gscatter(new_table.fd,new_table.delta_o3,final_table.weather_idx);
 auto_legend = [str2mat(mean_delta_o3_table.Properties.RowNames)];
 legend(auto_legend);
 xlabel('fractional day of the year');
-ylabel('Delta (GBS-Brewer) Ozone VCD [DU]');
+ylabel(['Delta (' instrument '-Brewer) Ozone VCD [DU]']);
 print_setting('narrow2',save_fig,['Delta_o3_timeserise_with_weather_info' labels]);
 %% figure 3.1,
 figure;
@@ -186,7 +222,7 @@ gscatter(new_table.fd,y,final_table.weather_idx);
 auto_legend = [str2mat(mean_delta_o3_table.Properties.RowNames)];
 legend(auto_legend);
 xlabel('fractional day of the year');
-ylabel('Delta (GBS-Brewer) Ozone VCD [%]');
+ylabel(['Delta (' instrument '-Brewer) Ozone VCD [%]']);
 print_setting('narrow2',save_fig,['Delta_percentage_o3_timeserise_with_weather_info' labels]);
 
 
