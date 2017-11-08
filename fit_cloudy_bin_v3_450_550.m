@@ -14,33 +14,37 @@ fig_size = 1/2;
 %load(data_input);
 data = data_input;
 
-RTM_data_path = 'E:\H\work\Eureka\GBS\CI\matlab\CF_package\database\';
+if ispc
+    RTM_data_path = 'E:\H\work\Eureka\GBS\CI\matlab\CF_package\database\';
+elseif isunix
+    RTM_data_path = '/home/kristof/work/matlab_code/CF_package_on_github/database/';
+end
 
 %% low COD condition
 %data_path = 'H:\work\Eureka\GBS\CI\2010\UTGBS\plots\RTM\cloud_tau2_1to3km\';
 %data_path = 'H:\work\Eureka\GBS\CI\2010\UTGBS\plots\RTM\cloud_tau1dot5_2to3km_albedo_0dot06\';
-data_path = [RTM_data_path 'cloud_tau1dot5_2to3km_albedo_0dot06\'];
+data_path = [RTM_data_path 'cloud_tau1dot5_2to3km_albedo_0dot06/'];
 simulation_type = 'lowCOD';
 model_lowCOD = SCIATRAN2_CI_450_550(data_path,simulation_type,plot_path);
 %% high COD condition
 %data_path = 'H:\work\Eureka\GBS\CI\2010\UTGBS\plots\RTM\cloud_tau12_1to3km\';
 %data_path = 'H:\work\Eureka\GBS\CI\2010\UTGBS\plots\RTM\cloud_tau9_2to3km_albedo_0dot06\';
-data_path = [RTM_data_path 'cloud_tau9_2to3km_albedo_0dot06\'];
+data_path = [RTM_data_path 'cloud_tau9_2to3km_albedo_0dot06/'];
 simulation_type = 'highCOD';
 model_highCOD = SCIATRAN2_CI_450_550(data_path,simulation_type,plot_path);
 %% clear condition
 %data_path = 'H:\work\Eureka\GBS\CI\2010\UTGBS\plots\RTM\clear_sky\';
-data_path = [RTM_data_path 'clear_sky\'];
+data_path = [RTM_data_path 'clear_sky/'];
 simulation_type = 'clear_sly';
 model_clear = SCIATRAN2_CI_450_550(data_path,simulation_type,plot_path);
 %% lowAOD condition
 %data_path = 'H:\work\Eureka\GBS\CI\2010\UTGBS\plots\RTM\aerosold_lowtran_23km_albedo_0dot06\';
-data_path = [RTM_data_path 'aerosold_lowtran_23km_albedo_0dot06\'];
+data_path = [RTM_data_path 'aerosold_lowtran_23km_albedo_0dot06/'];
 simulation_type = 'lowAOD';
 model_lowAOD = SCIATRAN2_CI_450_550(data_path,simulation_type,plot_path);
 %% verylowhAOD condition
 %data_path = 'H:\work\Eureka\GBS\CI\2010\UTGBS\plots\RTM\aerosold_lowtran_50km_albedo_0dot06\';
-data_path = [RTM_data_path 'aerosold_lowtran_50km_albedo_0dot06\'];
+data_path = [RTM_data_path 'aerosold_lowtran_50km_albedo_0dot06/'];
 simulation_type = 'verylowAOD';
 model_verylowAOD = SCIATRAN2_CI_450_550(data_path,simulation_type,plot_path);
 
