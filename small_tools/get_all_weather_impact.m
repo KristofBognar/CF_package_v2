@@ -187,6 +187,7 @@ xmax = N_weathers(1) + 1;
 xlim([0 xmax]);
 xlabel('EWS reported weather');
 ylabel(['Delta (' instrument '-Brewer) Ozone VCD [%]']);
+rotateXLabels( gca(), 45);
 print_setting('narrow2',save_fig,['Delta_percentage_o3_vcd' labels]);
 %% figure 2,
 figure;
