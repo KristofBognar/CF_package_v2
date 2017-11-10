@@ -22,7 +22,10 @@ elseif ds_zs == 1
     brewer = brewer_zs; % use brewer zenith-sky data
     fig_name = ['BrewerZS vs GBS' fig_name];
 end
-brewer.Time = [];
+try
+    brewer.Time = [];
+catch
+end
 brewer.ObsCode = [];
 
 %% load GBS

@@ -1,4 +1,4 @@
-function [mean_weather,mean_weather_ampm,delta_o3_table,delta_o3_table2,final_table2] =weather_impact(mode,CF_temp_file,weather_impact_plot_path,save_fig)
+function [mean_weather,mean_weather_ampm,delta_o3_table,delta_o3_table2,final_table2] =weather_impact(mode,table_nm,temp_file_folder_path,weather_impact_plot_path,save_fig)
 
 % Change the current folder to the folder of this m-file.
 if(~isdeployed)
@@ -18,36 +18,37 @@ if mode == 1 % use code locally
     load([temp_file_path 'temp.mat']);
     cd(temp_file_path);
     save_fig = 1;
-    
+    table_nm = 'gbs_brewer'
     %plot_path = 'E:\H\work\Eureka\GBS\CI\2010\weather_impact\'
     weather_impact_plot_path = [temp_file_path 'weather_impact\'];
 elseif mode == 2 % call by other function
     try
-        load([CF_temp_file '\temp.mat']);
+        load([temp_file_folder_path 'temp.mat']);
         C = who;
-        k = strfind(C,'gbs_brewer');       
+        k = strfind(C,table_nm);
         if isempty(cell2mat(k))
             try
-                load([CF_temp_file '\vs_Brewer\temp.mat']);
+                load([temp_file_folder_path 'vs_Brewer/temp.mat']);
             catch
-                disp('Still no gbs_brewer table found');
+                disp(['Still no ' table_nm ' table found']);
             end
         end
-     catch
+        disp('A temp.mat found');
+    catch
         disp('No temp.mat found, will try to load temp_fixref.mat');
+        try
+            load([temp_file_folder_path 'vs_Brewer/temp_fixref.mat']);
+        catch
+            disp('No temp_fixref.mat found, please check file path.');
+        end
     end
-    
-    try
-        load([CF_temp_file '\vs_Brewer\temp_fixref.mat']);
-     catch
-        disp('No temp_fixref.mat found, please check file path.');
-    end
+
 end
 
 C = who;
-k = strfind(C,'gbs_brewer');  
+k = strfind(C,table_nm);  
 if isempty(cell2mat(k))
-    disp('Error: Did not find temp file content gbs_brewer, please check file path.');
+    disp(['Error: Did not find temp file content ' table_nm ', please check file path.']);
 end
 k = strfind(C,'EWS');  
 if isempty(cell2mat(k))
@@ -303,6 +304,7 @@ DU = 2.6870e+16;
 % figure 1,
 figure;
 ax = gca;
+year_str = final_table.year(1,:);
 if strcmp(labels,'_daily')
     weathers = unique(final_table.weather_median);
 elseif strcmp(labels,'_ampm')
@@ -318,6 +320,7 @@ xmax = N_weathers(1) + 1;
 xlim([0 xmax]);
 xlabel('EWS reported weather');
 ylabel('Delta (GBS-Brewer) Ozone VCD [DU]');
+title(year_str);
 print_setting('narrow2',save_fig,['Delta_o3_vcd' labels]);
 %% figure 1.1, 
 figure;
@@ -329,6 +332,7 @@ set(gca,'XTick',index);
 set(gca,'XTickLabel',str2mat(delta_o3_table.weather));
 xlabel('EWS reported weather');
 ylabel('Frequence [days]');
+title(year_str);
 print_setting('narrow2',save_fig,['Delta_o3_freq' labels]);
 %% figure 2,
 figure;
@@ -342,6 +346,7 @@ plot(final_table.fd,final_table.mean_ColumnO3,'x');
 textbp('s: GBS; x: Brewer');
 xlabel('fractional day of the year');
 ylabel('Ozone VCD [DU]');
+title(year_str);
 print_setting('narrow2',save_fig,['O3_timeserise_with_weather_info' labels]);
 %% figure 3,
 figure;
@@ -353,6 +358,7 @@ auto_legend = [str2mat(delta_o3_table.weather)];
 legend(auto_legend);
 xlabel('fractional day of the year');
 ylabel('Delta (GBS-Brewer) Ozone VCD [DU]');
+title(year_str);
 print_setting('narrow2',save_fig,['Delta_o3_timeserise_with_weather_info' labels]);
 %% figure 3.1,
 figure;
@@ -365,6 +371,7 @@ auto_legend = [str2mat(delta_o3_table.weather)];
 legend(auto_legend);
 xlabel('fractional day of the year');
 ylabel('Delta (GBS-Brewer) Ozone VCD [%]');
+title(year_str);
 print_setting('narrow2',save_fig,['Delta_percentage_o3_timeserise_with_weather_info' labels]);
 
 
