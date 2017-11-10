@@ -1,3 +1,6 @@
 
-small_tools/weather_impact.asv
+small_tools/*.asv
 *.asv
+
+# OSX / *nix default autosave extension
+*.m~
