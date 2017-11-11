@@ -279,9 +279,39 @@ brewer = brewer_all;
 cd(plot_path);
 cd vs_Brewer
 save('gbs_brewer.mat','gbs','brewer','EWS','gbs_brewer','gbscf_brewer','gbs_brewerzs','gbscf_brewerzs','VCD','VCD_CF','list_HQ_day','qdoas_filt','rcd_S','rcd_SCF','year','uncertainties');
-% try
-%     email_notice('CODE SUCCESSFULLY FINISHED!');
-% catch
-%     disp('CAN NOT SEND EMAIL, PLS CHECK SETTINGS IN "email_notice".');
-% end
+
+%% 7) used fixed RCDs in VCD calculation for SAOZ instrument only
+% check if our input file assigned this "inputrun_saoz_fix_ref", if no such
+% input provided, this step 7 will be escaped
+check_saoz_fix_ref = sum(strcmp('run_saoz_fix_ref',input_table.Properties.VariableNames));
+
+if check_saoz_fix_ref >0
+    
+    % find fixed RCD values (note these numbers were provided by Andrea)
+    if sum(strcmp(year,{'2005','2006','2007'}))
+        fixed_rcd = 4.0e19;
+    elseif sum(strcmp(year,{'2008','2009','2010'}))
+        fixed_rcd = 5.0e19;
+    elseif strcmp(year,'2011')
+        fixed_rcd = 1.6e19;
+    elseif sum(strcmp(year,{'2012','2013','2014','2015','2016','2017'}))
+        fixed_rcd = 4.4e19;
+    else
+        disp(['Warning: No fixed RCD value was found! Please assign a RCD value for year ' year]);
+        disp(['Warning: No fixed reference VCD will be calculated for SAOZ']);
+        fixed_rcd = -9999;
+    end
+    
+    if (input_table.run_saoz_fix_ref == true) && (strcmp(input_table.instrument,'SAOZ')) && (fixed_rcd ~= -9999)% only use fixed RCD for SAOZ instrument!
+        disp(['A fixed RCD value of ' num2str(fixed_rcd) 'will be used to calculate SAOZ VCD']);
+        SAOZ_fixed_ref(year,plot_path,fixed_rcd);% calculate VCD use fixed RCD value
+    end
+end
+
+%% 
+try
+    email_notice('CODE SUCCESSFULLY FINISHED!');
+catch
+    disp('CAN NOT SEND EMAIL, PLS CHECK SETTINGS IN "email_notice".');
+end
 close all;

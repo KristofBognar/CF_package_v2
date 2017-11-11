@@ -1,7 +1,6 @@
 function [vcd_out,vcd_out_vec] = SAOZ_VCD(year,CF_ind,temp_file_nm,fixed_rcd)
 %% input %%
-%year = '2011';
-%temp_file_nm = 'H:\work\Eureka\SAOZ\2011\CF_450_550_minCI\VCD\temp.mat';
+
 load(temp_file_nm);
 rcd = fixed_rcd;
 min_nbr_pts = 8;
@@ -15,7 +14,6 @@ else
     dscd_S = dscd_S;
 end
 
-addpath('E:\F\Work\VCD\VCD_code\VCD_code_2017');
 %% VCD calculation %%
 time_pivot = datenum([year '-01-01 00:00:00']) -1;
 dscd_S.utc = dscd_S.fd + time_pivot;
