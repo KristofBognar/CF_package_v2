@@ -180,7 +180,7 @@ for i=1:1:N_gbs_brewer
     TF_ampm = (gbs_brewer(i,:).day == mean_weather_ampm.DoY_ampm) & (gbs_brewer(i,:).ampm == mean_weather_ampm.EWS_ampm);
     
     
-    if sum(TF_ref_time_exist) > 0
+    if (sum(TF_ref_time_exist) > 0) && strcmp(input_table.instrument,'GBS')
         ref_time1 = datetime(datevec(gbs_brewer.ref_sza_utc1));
         ref_time2 = datetime(datevec(gbs_brewer.ref_sza_utc2));
         TF_ref1_isnat = isnat(ref_time1);
@@ -221,7 +221,7 @@ for i=1:1:N_gbs_brewer
     end
 
         
-    if sum(TF_ref_time_exist) > 0
+    if (sum(TF_ref_time_exist) > 0) && strcmp(input_table.instrument,'GBS')
         if (sum(TF) > 0) & (sum(TF_ampm) > 0) & (sum(TF_ref) > 0) 
             new_table(j,:) = [gbs_brewer(i,:),mean_weather(TF,:),mean_weather_ampm(TF_ampm,:), EWS_ref_weather];
             j = j + 1;
