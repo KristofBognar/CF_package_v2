@@ -26,7 +26,7 @@ else
         for day = min(data.day):1:max(data.day)
             TF = (str2num(data.year) == year) & (data.day == day);
             if sum(TF) == 1
-                data(TF,:) = [];
+                data(TF,:) = []; % we only keep days have both am. pm. values
             elseif sum(TF) == 2
                 data.daily_gbs_mean(TF,:) = mean(data.mean_vcd(TF,:));
                 data.daily_gbs_mean_langley(TF,:) = mean(data.langley_vcd(TF,:));

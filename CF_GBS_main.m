@@ -225,35 +225,35 @@ if (input_table.escape == false) | (step_number < 5)
         % calculate uncertainties
         fig_title = 'BrewerDS vs GBS';
         gbs_vcd_type = 'normal';
-        uncertainties_gbs_brewer = uncertainty_v3(gbs_brewer,gbs_vcd_type,save_fig,fig_title);
+        uncertainties_gbs_brewer = uncertainty_v4(gbs_brewer,gbs_vcd_type,save_fig,fig_title);
 
         fig_title = 'BrewerDS vs GBS(langley)';
         gbs_vcd_type = 'langley';
-        uncertainties_gbsl_brewer = uncertainty_v3(gbs_brewer,gbs_vcd_type,save_fig,fig_title);
+        uncertainties_gbsl_brewer = uncertainty_v4(gbs_brewer,gbs_vcd_type,save_fig,fig_title);
 
         fig_title = 'BrewerDS vs GBS-CF';
         gbs_vcd_type = 'normal';
-        uncertainties_gbscf_brewer = uncertainty_v3(gbscf_brewer,gbs_vcd_type,save_fig,fig_title);
+        uncertainties_gbscf_brewer = uncertainty_v4(gbscf_brewer,gbs_vcd_type,save_fig,fig_title);
 
         fig_title = 'BrewerDS vs GBS-CF(langley)';
         gbs_vcd_type = 'langley';
-        uncertainties_gbscfl_brewer = uncertainty_v3(gbscf_brewer,gbs_vcd_type,save_fig,fig_title);
+        uncertainties_gbscfl_brewer = uncertainty_v4(gbscf_brewer,gbs_vcd_type,save_fig,fig_title);
 
         fig_title = 'BrewerZS vs GBS';
         gbs_vcd_type = 'normal';
-        uncertainties_gbs_brewerzs = uncertainty_v3(gbs_brewerzs,gbs_vcd_type,save_fig,fig_title);
+        uncertainties_gbs_brewerzs = uncertainty_v4(gbs_brewerzs,gbs_vcd_type,save_fig,fig_title);
 
         fig_title = 'BrewerZS vs GBS(langley)';
         gbs_vcd_type = 'langley';
-        uncertainties_gbsl_brewerzs = uncertainty_v3(gbs_brewerzs,gbs_vcd_type,save_fig,fig_title);
+        uncertainties_gbsl_brewerzs = uncertainty_v4(gbs_brewerzs,gbs_vcd_type,save_fig,fig_title);
 
         fig_title = 'BrewerZS vs GBS-CF';
         gbs_vcd_type = 'normal';
-        uncertainties_gbscf_brewerzs = uncertainty_v3(gbscf_brewerzs,gbs_vcd_type,save_fig,fig_title);
+        uncertainties_gbscf_brewerzs = uncertainty_v4(gbscf_brewerzs,gbs_vcd_type,save_fig,fig_title);
 
         fig_title = 'BrewerZS vs GBS-CF(langley)';
         gbs_vcd_type = 'langley';
-        uncertainties_gbscfl_brewerzs = uncertainty_v3(gbscf_brewerzs,gbs_vcd_type,save_fig,fig_title);
+        uncertainties_gbscfl_brewerzs = uncertainty_v4(gbscf_brewerzs,gbs_vcd_type,save_fig,fig_title);
 
         uncertainties = [uncertainties_gbs_brewer;uncertainties_gbscf_brewer;uncertainties_gbs_brewerzs;uncertainties_gbscf_brewerzs;uncertainties_gbsl_brewer;uncertainties_gbscfl_brewer;uncertainties_gbsl_brewerzs;uncertainties_gbscfl_brewerzs];
         uncertainties.Properties.RowNames = {'gbs_brewer','gbscf_brewer','gbs_brewerzs','gbscf_brewerzs','gbsl_brewer','gbscfl_brewer','gbsl_brewerzs','gbscfl_brewerzs'};
