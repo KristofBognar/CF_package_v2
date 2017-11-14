@@ -1,4 +1,4 @@
-function [mean_weather,mean_weather_ampm,delta_o3_table,delta_o3_table2,final_table2] =weather_impact(mode,table_nm,temp_file_folder_path,weather_impact_plot_path,save_fig)
+function [mean_weather,mean_weather_ampm,delta_o3_table,delta_o3_table2,final_table] =weather_impact(mode,table_nm,temp_file_folder_path,weather_impact_plot_path,save_fig)
 
 % Change the current folder to the folder of this m-file.
 if(~isdeployed)
@@ -272,18 +272,13 @@ for i = 1:1:N_weathers(1)
     TF = strcmp(weathers(i), final_table.weather_median_ampm);
     new_subtable = final_table(TF,:);
     new_subtable.weather_idx = repmat(i,[sum(TF),1]);
-    if i == 1
-        final_table2 = [new_subtable];
-    else
-        final_table2 = [final_table;new_subtable];
-    end
     
     weather_freq_ampm(i) = sum(TF);
     mean_delta_o3_ampm(i) = mean(final_table.delta_o3(TF,:));
     std_delta_o3_ampm(i) = std(final_table.delta_o3(TF,:));
     mean_Brewer_o3_ampm(i) = mean(gbs_brewer.mean_ColumnO3(TF,:));
 end
-final_table2 = sortrows(final_table2,'UTC');
+
 
 delta_o3_table2 = table();
 delta_o3_table2.weather = weathers;
@@ -293,11 +288,11 @@ delta_o3_table2.std_delta_o3 = std_delta_o3_ampm';
 delta_o3_table2.mean_Brewer_o3 = mean_Brewer_o3_ampm';
 
 %% save data
-save('weather_impact.mat','mean_weather','mean_weather_ampm','delta_o3_table','delta_o3_table2','final_table2');
+save('weather_impact.mat','mean_weather','mean_weather_ampm','delta_o3_table','delta_o3_table2','final_table');
 
 
-weather_inpact_plots(delta_o3_table,final_table2,save_fig,'_daily');
-weather_inpact_plots(delta_o3_table2,final_table2,save_fig,'_ampm') ;
+weather_inpact_plots(delta_o3_table,final_table,save_fig,'_daily');
+weather_inpact_plots(delta_o3_table2,final_table,save_fig,'_ampm') ;
 %% 
 function weather_inpact_plots(delta_o3_table,final_table,save_fig,labels)
 DU = 2.6870e+16;
