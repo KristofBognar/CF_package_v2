@@ -73,22 +73,26 @@ for i = 1:1:N_files(1)
         %[mean_weather,delta_o3_table,final_table] = weather_impact(2,CF_temp_files{i},weather_impact_plot_path,save_fig);
         disp(['Working on year: ' num2str(years(i))]);
         [mean_weather,mean_weather_ampm,delta_o3_table,delta_o3_table_ampm,final_table] = weather_impact(2,table_nm,CF_temp_files{i},weather_impact_plot_path,save_fig);
+        do_concat = true;
     catch 
         disp(['no results from file: ' num2str(i)]);
+        do_concat = false;
     end
-    if i == 1
+    
+    if (i == 1) && (do_concat == true)
         mean_weather_concat = mean_weather;
         delta_o3_table_concat = delta_o3_table;
         mean_weather_concat_ampm = mean_weather_ampm;
         delta_o3_table_concat_ampm = delta_o3_table_ampm;
         final_table_concat = final_table;
-    else
+    elseif (do_concat == true)
         mean_weather_concat = [mean_weather_concat;mean_weather];
         delta_o3_table_concat = [delta_o3_table_concat;delta_o3_table];
         mean_weather_concat_ampm = [mean_weather_concat_ampm;mean_weather_ampm];
         delta_o3_table_concat_ampm = [delta_o3_table_concat_ampm;delta_o3_table_ampm];
         if width(final_table_concat) == width(final_table) % if data table from different years have same width (same columns), just join them
             final_table_concat = [final_table_concat;final_table];
+            final_table_concat = sortrows(final_table_concat,'mean_LTC');
         else
             if width(final_table_concat)> width(final_table) % if previous years have more columns than current year
                 N_columns = width(final_table_concat);
@@ -104,6 +108,7 @@ for i = 1:1:N_files(1)
                     table_shrink(:,k) = []; % delete the column 
                 end
             end
+            final_table_concat = [];
             final_table_concat = [table_shrink;table_keep];% 
             final_table_concat = sortrows(final_table_concat,'mean_LTC');
         end
