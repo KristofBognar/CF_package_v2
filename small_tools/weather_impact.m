@@ -49,6 +49,9 @@ C = who;
 k = strfind(C,table_nm);  
 if isempty(cell2mat(k))
     disp(['Error: Did not find temp file content ' table_nm ', please check file path.']);
+else
+    eval(['data = ' table_nm ';']);
+    disp(['Data table: ' table_nm ' is used in analysis.']);
 end
 k = strfind(C,'EWS');  
 if isempty(cell2mat(k))
@@ -59,7 +62,7 @@ mkdir(weather_impact_plot_path);
 cd(weather_impact_plot_path);
 %% calculate gbs - brewer VCD difference
 DU = 2.6870e+16;
-gbs_brewer.delta_o3 = gbs_brewer.mean_vcd./DU - gbs_brewer.mean_ColumnO3;
+data.delta_o3 = data.mean_vcd./DU - data.mean_ColumnO3;
 
 %% make EWS daily report
 EWS.datetime = datetime(EWS.DateTime);
@@ -170,40 +173,40 @@ mean_weather_ampm.total_obs_hrs_ampm = total_obs_hrs_ampm';
 %% merge gbs-brewer obs table with EWS daily report
 new_table = table;
 j = 1;
-N_gbs_brewer = size(gbs_brewer);
-TF_ref_time_exist = strcmp('ref_sza_utc1',gbs_brewer.Properties.VariableNames);
+N_data = size(data);
+TF_ref_time_exist = strcmp('ref_sza_utc1',data.Properties.VariableNames);
 if sum(TF_ref_time_exist) == 0
     disp('No reference spec time was found! Will not search weather record for ref spec.');
 end
-for i=1:1:N_gbs_brewer
-    TF = gbs_brewer(i,:).day == mean_weather.DoY;
-    TF_ampm = (gbs_brewer(i,:).day == mean_weather_ampm.DoY_ampm) & (gbs_brewer(i,:).ampm == mean_weather_ampm.EWS_ampm);
+for i=1:1:N_data
+    TF = data(i,:).day == mean_weather.DoY;
+    TF_ampm = (data(i,:).day == mean_weather_ampm.DoY_ampm) & (data(i,:).ampm == mean_weather_ampm.EWS_ampm);
     
     
     if (sum(TF_ref_time_exist) > 0) && strcmp(input_table.instrument,'GBS')
-        ref_time1 = datetime(datevec(gbs_brewer.ref_sza_utc1));
-        ref_time2 = datetime(datevec(gbs_brewer.ref_sza_utc2));
+        ref_time1 = datetime(datevec(data.ref_sza_utc1));
+        ref_time2 = datetime(datevec(data.ref_sza_utc2));
         TF_ref1_isnat = isnat(ref_time1);
         ref_time1(TF_ref1_isnat,:) = ref_time2(TF_ref1_isnat,:);
 
         UTC_offset = 5;
         EWS_ref_weather = table;
-        TF_ref = (gbs_brewer(i,:).day == EWS.DoY) & (ref_time1(i,:).Hour -UTC_offset == EWS.datetime.Hour);
+        TF_ref = (data(i,:).day == EWS.DoY) & (ref_time1(i,:).Hour -UTC_offset == EWS.datetime.Hour);
         if sum(TF_ref) == 1
             EWS_ref_weather.ref_weather = EWS.Weather(TF_ref,:);
             EWS_ref_weather.ref_datetime_in_EWS =  EWS.datetime(TF_ref,:);
         elseif sum(TF_ref) == 0
             disp('Warning: no weather record was found match with time of ref sepc');
-            disp(['Year:' num2str(gbs_brewer(i,:).year) '; Day:' num2str(gbs_brewer(i,:).day)]);
+            disp(['Year:' num2str(data(i,:).year) '; Day:' num2str(data(i,:).day)]);
             disp('Warning: will try to find record in +1 hr');
-            TF_ref = (gbs_brewer(i,:).day == EWS.DoY) & (ref_time1(i,:).Hour -UTC_offset +1 == EWS.datetime.Hour);
+            TF_ref = (data(i,:).day == EWS.DoY) & (ref_time1(i,:).Hour -UTC_offset +1 == EWS.datetime.Hour);
             if sum(TF_ref) == 1
                 EWS_ref_weather.ref_weather = EWS.Weather(TF_ref,:);
                 EWS_ref_weather.ref_datetime_in_EWS =  EWS.datetime(TF_ref,:);
             elseif sum(TF_ref) == 0
                 disp('Warning: no weather record was found match with time of ref sepc + 1hr');
                 disp('Warning: will try to find record in -1 hr');
-                TF_ref = (gbs_brewer(i,:).day == EWS.DoY) & (ref_time1(i,:).Hour -UTC_offset -1 == EWS.datetime.Hour);
+                TF_ref = (data(i,:).day == EWS.DoY) & (ref_time1(i,:).Hour -UTC_offset -1 == EWS.datetime.Hour);
                 if sum(TF_ref) == 1
                     EWS_ref_weather.ref_weather = EWS.Weather(TF_ref,:); 
                     EWS_ref_weather.ref_datetime_in_EWS =  EWS.datetime(TF_ref,:);
@@ -223,12 +226,12 @@ for i=1:1:N_gbs_brewer
         
     if (sum(TF_ref_time_exist) > 0) && strcmp(input_table.instrument,'GBS')
         if (sum(TF) > 0) & (sum(TF_ampm) > 0) & (sum(TF_ref) > 0) 
-            new_table(j,:) = [gbs_brewer(i,:),mean_weather(TF,:),mean_weather_ampm(TF_ampm,:), EWS_ref_weather];
+            new_table(j,:) = [data(i,:),mean_weather(TF,:),mean_weather_ampm(TF_ampm,:), EWS_ref_weather];
             j = j + 1;
         end
     else
         if (sum(TF) > 0) & (sum(TF_ampm) > 0)
-            new_table(j,:) = [gbs_brewer(i,:),mean_weather(TF,:),mean_weather_ampm(TF_ampm,:)];
+            new_table(j,:) = [data(i,:),mean_weather(TF,:),mean_weather_ampm(TF_ampm,:)];
             j = j + 1;
         end
     end
@@ -252,7 +255,7 @@ for i = 1:1:N_weathers(1)
     weather_freq(i) = sum(TF);
     mean_delta_o3(i) = mean(new_table.delta_o3(TF,:));
     std_delta_o3(i) = std(new_table.delta_o3(TF,:));
-    mean_Brewer_o3(i) = mean(gbs_brewer.mean_ColumnO3(TF,:));
+    mean_Brewer_o3(i) = mean(data.mean_ColumnO3(TF,:));
 end
 final_table = sortrows(final_table,'UTC');
 
@@ -276,7 +279,7 @@ for i = 1:1:N_weathers(1)
     weather_freq_ampm(i) = sum(TF);
     mean_delta_o3_ampm(i) = mean(final_table.delta_o3(TF,:));
     std_delta_o3_ampm(i) = std(final_table.delta_o3(TF,:));
-    mean_Brewer_o3_ampm(i) = mean(gbs_brewer.mean_ColumnO3(TF,:));
+    mean_Brewer_o3_ampm(i) = mean(data.mean_ColumnO3(TF,:));
 end
 
 
