@@ -10,7 +10,7 @@ function get_all_weather_impact(mode)
 % mode = 2, use inputs from "CF_input_file_smalltools.txt"
 
 if nargin == 0
-    mode = 1;
+    mode = 2;
 end
 
 if mode == 1
@@ -73,21 +73,45 @@ for i = 1:1:N_files(1)
         %[mean_weather,delta_o3_table,final_table] = weather_impact(2,CF_temp_files{i},weather_impact_plot_path,save_fig);
         disp(['Working on year: ' num2str(years(i))]);
         [mean_weather,mean_weather_ampm,delta_o3_table,delta_o3_table_ampm,final_table] = weather_impact(2,table_nm,CF_temp_files{i},weather_impact_plot_path,save_fig);
+        do_concat = true;
     catch 
         disp(['no results from file: ' num2str(i)]);
+        do_concat = false;
     end
-    if i == 1
+    
+    if (i == 1) && (do_concat == true)
         mean_weather_concat = mean_weather;
         delta_o3_table_concat = delta_o3_table;
         mean_weather_concat_ampm = mean_weather_ampm;
         delta_o3_table_concat_ampm = delta_o3_table_ampm;
         final_table_concat = final_table;
-    else
+    elseif (do_concat == true)
         mean_weather_concat = [mean_weather_concat;mean_weather];
         delta_o3_table_concat = [delta_o3_table_concat;delta_o3_table];
         mean_weather_concat_ampm = [mean_weather_concat_ampm;mean_weather_ampm];
         delta_o3_table_concat_ampm = [delta_o3_table_concat_ampm;delta_o3_table_ampm];
-        final_table_concat = [final_table_concat;final_table];
+        if width(final_table_concat) == width(final_table) % if data table from different years have same width (same columns), just join them
+            final_table_concat = [final_table_concat;final_table];
+            final_table_concat = sortrows(final_table_concat,'mean_LTC');
+        else
+            if width(final_table_concat)> width(final_table) % if previous years have more columns than current year
+                N_columns = width(final_table_concat);
+                table_shrink = final_table_concat; % we will shrink the table of previous years
+                table_keep = final_table;
+            else
+                N_columns = width(final_table);
+                table_shrink = final_table;
+                table_keep = final_table_concat;
+            end
+            for k = N_columns:-1:1
+                if sum(strcmp(table_shrink.Properties.VariableNames(k),table_keep.Properties.VariableNames)) == 0 % find any columns that only apeared in one table
+                    table_shrink(:,k) = []; % delete the column 
+                end
+            end
+            final_table_concat = [];
+            final_table_concat = [table_shrink;table_keep];% 
+            final_table_concat = sortrows(final_table_concat,'mean_LTC');
+        end
     end
 end
 
@@ -155,6 +179,7 @@ xmax = N_weathers(1) + 1;
 xlim([0 xmax]);
 xlabel('EWS reported weather');
 ylabel(['Delta (' instrument '-Brewer) Ozone VCD [DU]']);
+rotateXLabels( gca(), 45);
 print_setting('narrow2',save_fig,['Delta_o3_vcd' labels]);
 %% figure 1.1, 
 figure;
@@ -167,6 +192,7 @@ set(gca,'XTick',index);
 
 %set(gca,'XTickLabel',str2mat(mean_delta_o3_table.weather));
 set(gca,'XTickLabel',str2mat(mean_delta_o3_table.Properties.RowNames));
+rotateXLabels( gca(), 45);
 xlabel('EWS reported weather');
 ylabel('Number of measurements [half day]');
 print_setting('narrow2',save_fig,['Delta_o3_freq' labels]);
