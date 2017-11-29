@@ -2,17 +2,19 @@ function new_table = weather_impact_MERRA2()
 % this function read in GBS-MERRA2 data, and EWS data, then merge them
 
 % load GBS VCD paired with MERRA data table
-load('E:\H\work\Eureka\GBS\CI\MERRA2\GBS_VCD_2010_2017_MERRA2_2010_2015.mat');
+%load('E:\H\work\Eureka\GBS\CI\MERRA2\GBS_VCD_2010_2017_MERRA2_2010_2015.mat');
+load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews.mat'); % load archive datasets, which has EWS
 % load merged multi-year EWS data
-load('E:\H\work\Eureka\Eureka_weather_station\EWS_1999_2017.mat');
+%load('E:\H\work\Eureka\Eureka_weather_station\EWS_1999_2017.mat');
 
-data = GBS_VCD_MERRA2; % just rename it
+data = SAOZ_V3_reformat_MERRA2; % just rename it
+%data = SAOZ_MERRA2; % just rename it
 data.date = datetime(data.UTC_str.Year,data.UTC_str.Month,data.UTC_str.Day);
 
 % give the name of instrument
 input_table = table;
-input_table.instrument = 'GBS';
-save_fig = 0;
+input_table.instrument = 'SAOZ';
+save_fig = 1;
 labels = 'test';
 
 % filter EWS
@@ -153,7 +155,7 @@ for i=1:1:N_data
                 elseif sum(TF_ref) == 0
                     disp('Warning: no weather record was found match with time of ref sepc +/- 1hr');
                     disp('Warning: will just place NaN in there!');
-                    EWS_ref_weather.ref_weather = 'NaN'; 
+                    EWS_ref_weather.ref_weather = cellstr('NaN'); 
                     EWS_ref_weather.ref_datetime_in_EWS =  'NaT';
                     
                 end
@@ -164,20 +166,23 @@ for i=1:1:N_data
     end
 
         
-    if (sum(TF_ref_time_exist) > 0) && strcmp(input_table.instrument,'GBS')
-        if (sum(TF) > 0) & (sum(TF_ampm) > 0) & (sum(TF_ref) > 0) 
+    if (sum(TF_ref_time_exist) > 0) && strcmp(input_table.instrument,'GBS') % we do have ref time in data table (note, GBS has ref time, but SAOZ data don't)
+        %if (sum(TF) > 0) & (sum(TF_ampm) > 0) & (sum(TF_ref) > 0) 
+        if (sum(TF) > 0) & (sum(TF_ampm) > 0) 
             new_table(j,:) = [data(i,:),mean_weather(TF,:),mean_weather_ampm(TF_ampm,:), EWS_ref_weather];
             j = j + 1;
         end
-    else
+    else % when no reference time saved in table, we won't bother to give weather @ ref time
         if (sum(TF) > 0) & (sum(TF_ampm) > 0)
             new_table(j,:) = [data(i,:),mean_weather(TF,:),mean_weather_ampm(TF_ampm,:)];
             j = j + 1;
         end
     end
+    
 end
 
-    
-mean_delta_o3_table = plot_get_all_weather_impact(input_table.instrument,new_table,save_fig,'_daily')
-mean_delta_o3_table_ampm = plot_get_all_weather_impact(input_table.instrument,new_table,save_fig,'_ampm')
+TF = strcmp(new_table.weather_median_ampm,'Clear') | strcmp(new_table.weather_median_ampm,'Mainly Clear') | strcmp(new_table.weather_median_ampm,'Mostly Cloudy') | strcmp(new_table.weather_median_ampm,'Cloudy') | strcmp(new_table.weather_median_ampm,'Ice Crystals') | strcmp(new_table.weather_median_ampm,'Rain') | strcmp(new_table.weather_median_ampm,'Snow');   
+
+mean_delta_o3_table = plot_get_all_weather_impact(input_table.instrument,new_table(TF,:),save_fig,'_daily')
+mean_delta_o3_table_ampm = plot_get_all_weather_impact(input_table.instrument,new_table(TF,:),save_fig,'_ampm')
 
