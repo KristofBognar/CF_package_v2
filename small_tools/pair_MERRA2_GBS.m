@@ -1,12 +1,12 @@
 function data_output = pair_MERRA2_GBS()
-% this function will append MERRA2 data to GBS data table.
+% this function will append MERRA2 data to GBS/SAOZ data table.
 % if no MERRA2 data avilable, then just fill the MERRA2 columns with place
 % holders. 
 
 %load('E:\H\work\Eureka\GBS\CI\weather_impact_v2\weather_impact.mat'); % load GBS data
 %GBS = final_table_concat; % this is the GBS-Brewer table, change to any other GBS table, if needed. But need make sure the GBS table has LTC column (Matlab serieal time)
-load('E:\H\work\Eureka\GBS\CI\GBS_VCD_2010_2017.mat'); % load GBS VCD data
-GBS = VCD_merged; % this is the GBS table, change to any other GBS table, if needed. But need make sure the GBS table has LTC column (Matlab serieal time)
+load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews.mat'); % load GBS VCD data
+GBS = SAOZ_V3_reformat; % this is the GBS type VCD table, change to any other GBS or SAOZ table, if needed. But need make sure the GBS table has LTC column (Matlab serieal time)
 GBS.UTC_str = datetime(datestr(GBS.UTC));
 GBS.LTC_str = datetime(datestr(GBS.UTC -5/24));
 
