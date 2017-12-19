@@ -10,8 +10,16 @@ DU=2.69e16;
 
 %X_Day_step = 9; % X day mean, this is for calculate the low frequency (X day averged) ozone value
 data = gbs_brewer;
-TF = str2num(data.year) >= 2010;
+try
+    TF = str2num(data.year) >= 2010;
+catch 
+    data.year = num2str(datetime(datevec(data.UTC)).Year);
+    data.day = data.DoY;
+    TF = str2num(data.year) >= 2010;
+end
 data = data(TF,:);
+TF = isnan(data.mean_ColumnO3) | isnan(data.mean_vcd);
+data(TF,:) = [];
 
 if ~istable(data)
     disp('Can not estimate uncertainties: No Brewer measurements found conincident with GBS measurements!');
@@ -32,7 +40,11 @@ else
                 data(TF,:) = []; % we only keep days have both am. pm. values
             elseif sum(TF) == 2
                 data.daily_gbs_mean(TF,:) = mean(data.mean_vcd(TF,:));
-                data.daily_gbs_mean_langley(TF,:) = mean(data.langley_vcd(TF,:));
+                try
+                    data.daily_gbs_mean_langley(TF,:) = mean(data.langley_vcd(TF,:));
+                catch
+                    %disp('No langley slop VCD was found');
+                end
                 data.daily_brewer_mean(TF,:) = mean(data.mean_ColumnO3(TF,:));
             end
         end   
@@ -42,10 +54,16 @@ else
         for X_day = min(data.day):X_Day_step:max(data.day)
             TF = (str2num(data.year) == year) & (data.day>=X_day) & (data.day<X_day+X_Day_step);
             if sum(TF) == 1
+            %if (sum(TF) < fix(X_Day_step/2 +2)) | sum(TF) == 1
                 data(TF,:) = []; % we only keep days have both am. pm. values
             elseif sum(TF) > 1
+            %elseif sum(TF) >= fix(X_Day_step/2 +2)
                 data.Xday_gbs_mean(TF,:) = mean(data.mean_vcd(TF,:));
-                data.Xday_gbs_mean_langley(TF,:) = mean(data.langley_vcd(TF,:));
+                try
+                    data.Xday_gbs_mean_langley(TF,:) = mean(data.langley_vcd(TF,:));
+                catch
+                    %disp('No langley slop VCD was found');
+                end
                 data.Xday_brewer_mean(TF,:) = mean(data.mean_ColumnO3(TF,:));
             end
         end
@@ -53,10 +71,12 @@ else
         
     %%
     if strcmp(gbs_vcd_type,'normal')
-        %M1 = (data.mean_vcd - data.daily_gbs_mean)./DU; % GBS TCO using our normal routine (RCD -> VCDs -> mean VCD)
-        M1 = (data.mean_vcd - data.Xday_gbs_mean)./DU; % GBS TCO using our normal routine (RCD -> VCDs -> mean VCD)
+        if max(data.mean_vcd) > 1e18
+            M1 = (data.mean_vcd - data.Xday_gbs_mean)./DU; % GBS TCO using our normal routine (RCD -> VCDs -> mean VCD)
+        else
+            M1 = (data.mean_vcd - data.Xday_gbs_mean); % GBS TCO using our normal routine (RCD -> VCDs -> mean VCD)
+        end
     elseif strcmp(gbs_vcd_type,'langley')
-        %M1 = (data.langley_vcd - data.daily_gbs_mean_langley)./DU; % GBS TCO using slope of langley fit as VCD
         M1 = (data.langley_vcd - data.Xday_gbs_mean_langley)./DU; % GBS TCO using slope of langley fit as VCD
     end
     %M2 = data.mean_ColumnO3 - data.daily_brewer_mean; % brewer TCO
@@ -135,13 +155,16 @@ else
     uncertainties.pu_X_err = pu_X_err;
     uncertainties.rho = rho;
     uncertainties.pval = pval;
+    uncertainties.N = NN;
+    uncertainties.mean_day = mean(data.day);
+    uncertainties.median_day = median(data.day);
     
     
     %linear_fits(M1,M2);
     linear_fits(M2,M1);
     hold all;
     %c = g1.T20(~TF,:);
-    c = data.fd(~TF,:);
+    %c = data.fd(~TF,:);
     %scatter(M1,M2,20,c,'filled');
     dscatter(M2,M1,'MARKER','o','MSIZE',30,'FILLED',true);
     %scatter(M2,M1,20,c,'filled');
