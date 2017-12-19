@@ -4,7 +4,9 @@ function plot_all_boxplots()
 size_fig = 1/2;
 save_fig = 1;
 
-load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews');
+%load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews');
+%load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews_2017'); % this version of data extended to 2017
+load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews_2017_high_quality.mat'); % this version of data extended to 2017
 SAOZ_V3_reformat_MERRA2_EWS(isnan(SAOZ_V3_reformat_MERRA2_EWS.mean_vcd),:) = [];
 SAOZ_V3_reformat_Brewer_EWS(isnan(SAOZ_V3_reformat_Brewer_EWS.mean_vcd),:) = [];
 
