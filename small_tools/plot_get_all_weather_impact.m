@@ -27,7 +27,7 @@ eval(['VCD2 = data.' VCD2_column_nm ';']);
 if strcmp(instrument, 'GBS') | strcmp(instrument, 'SAOZ')
     VCD1 = VCD1./DU; % if VCD1 is GBS data, need divide by DU! If this is SAOZ (processed by using GBS algorithm), we also need divide DU!
 elseif strcmp(instrument, 'SAOZ-V3')
-    VCD1 = VCD1; % if VCD1 is GBS data, need divide by DU!
+    VCD1 = VCD1; % if VCD1 is GBS data, no need divide by DU!
 end
 data.delta_o3 = VCD1 - VCD2;
 data.p_delta_o3 = (VCD1 - VCD2)./VCD2.*100;
