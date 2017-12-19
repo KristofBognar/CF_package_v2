@@ -3,17 +3,18 @@ function new_table = weather_impact_MERRA2()
 
 % load GBS VCD paired with MERRA data table
 %load('E:\H\work\Eureka\GBS\CI\MERRA2\GBS_VCD_2010_2017_MERRA2_2010_2015.mat');
-load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews.mat'); % load archive datasets, which has EWS
+%load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews.mat'); % load archive datasets, which has EWS
+load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_2017.mat'); % this version of data extended to 2017
 % load merged multi-year EWS data
 %load('E:\H\work\Eureka\Eureka_weather_station\EWS_1999_2017.mat');
 
-data = SAOZ_V3_reformat_MERRA2; % just rename it
-%data = SAOZ_MERRA2; % just rename it
+%data = SAOZ_V3_reformat_MERRA2; % just rename it
+data = GBS_MERRA2; % just rename it
 data.date = datetime(data.UTC_str.Year,data.UTC_str.Month,data.UTC_str.Day);
 
 % give the name of instrument
 input_table = table;
-input_table.instrument = 'SAOZ';
+input_table.instrument = 'GBS';% please use "GBS", "SAOZ", or 'SAOZ-V3'
 save_fig = 1;
 labels = 'test';
 

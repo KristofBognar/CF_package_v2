@@ -1,8 +1,9 @@
 function scatter_all_timeserise()
 % this function just for scatter all timeserises 
 DU = 2.6870e+16;
-save_fig = 1;
-load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2.mat');
+save_fig = 0;
+%load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2.mat');
+load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews_2017_high_quality.mat');% this dataset extended to 2017
 
 SAOZ_V3.UTC = datenum(datetime(SAOZ_V3.Year,SAOZ_V3.Month,SAOZ_V3.Day));
 

@@ -6,7 +6,8 @@ function data_output = pair_MERRA2_GBS()
 %load('E:\H\work\Eureka\GBS\CI\weather_impact_v2\weather_impact.mat'); % load GBS data
 %GBS = final_table_concat; % this is the GBS-Brewer table, change to any other GBS table, if needed. But need make sure the GBS table has LTC column (Matlab serieal time)
 load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews.mat'); % load GBS VCD data
-GBS = SAOZ_V3_reformat; % this is the GBS type VCD table, change to any other GBS or SAOZ table, if needed. But need make sure the GBS table has LTC column (Matlab serieal time)
+%GBS = SAOZ_V3_reformat; % this is the GBS type VCD table, change to any other GBS or SAOZ table, if needed. But need make sure the GBS table has LTC column (Matlab serieal time)
+GBS = GBS;
 GBS.UTC_str = datetime(datestr(GBS.UTC));
 GBS.LTC_str = datetime(datestr(GBS.UTC -5/24));
 
@@ -36,7 +37,8 @@ end
 
 %%
 function data = prepare_MERRA2()
-load('E:\H\work\MERRA\MERRA2_from_Sophie\MERRA2_table_PV_thermal_TCO_PWV_with_partial_columns_with_surface_o3.mat'); % load MERRA-2 data
+%load('E:\H\work\MERRA\MERRA2_from_Sophie\MERRA2_table_PV_thermal_TCO_PWV_with_partial_columns_with_surface_o3.mat'); % load MERRA-2 data
+load('E:\H\work\MERRA\MERRA2_from_Sophie\MERRA2_table_PV_thermal_TCO_PWV_with_partial_columns_with_surface_o3_2006_2017.mat'); % load MERRA-2 data, this dataset expanded to 2017
 
 data = table;
 % only use necessary columns from MERRA-2 table
