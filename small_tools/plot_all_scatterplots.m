@@ -4,9 +4,9 @@ function output = plot_all_scatterplots()
 % conditions
 save_fig = 1;
 DU = 2.6870e+16;
-plot_path = 'E:\H\work\Eureka\GBS\CI\archive\sactter_plots';
+plot_path = 'E:\H\work\Eureka\GBS\CI\archive\sactter_plots\temp\';
 %load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews');
-load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews_2017_high_quality.mat');% this dataset extend to 2017, and single measurement has been filtered
+load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews_2017_high_quality_dmp.mat');% this dataset extend to 2017, and single measurement has been filtered
 addpath('E:\F\Work\MatlabCode');
 
 cd(plot_path);
