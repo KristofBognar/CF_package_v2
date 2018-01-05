@@ -3,12 +3,30 @@ function plot_all_boxplots()
 % then will try to make a boxplot that have all tables show up
 size_fig = 1/2;
 save_fig = 1;
+DMP_filter = false; % if use DMP filter, measurements with vortex abouve Eureka will be removed!
 
+addpath('E:\F\Work\MatlabCode');
 %load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews');
 %load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews_2017'); % this version of data extended to 2017
-load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews_2017_high_quality.mat'); % this version of data extended to 2017
+load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews_2017_high_quality_dmp.mat'); % this version of data extended to 2017
 SAOZ_V3_reformat_MERRA2_EWS(isnan(SAOZ_V3_reformat_MERRA2_EWS.mean_vcd),:) = [];
 SAOZ_V3_reformat_Brewer_EWS(isnan(SAOZ_V3_reformat_Brewer_EWS.mean_vcd),:) = [];
+
+if DMP_filter
+    TF_vortex = GBS_MERRA2_EWS.MERRA2_sPV_at_Theta490 >= 1.4e-4; % if we want remove measurements within vortex
+    GBS_MERRA2_EWS(TF_vortex,:) = [];
+    TF_vortex = SAOZ_MERRA2_EWS.MERRA2_sPV_at_Theta490 >= 1.4e-4; % if we want remove measurements within vortex
+    SAOZ_MERRA2_EWS(TF_vortex,:) = [];
+
+    TF_vortex = GBS_CF_MERRA2_EWS.MERRA2_sPV_at_Theta490 >= 1.4e-4; % if we want remove measurements within vortex
+    GBS_CF_MERRA2_EWS(TF_vortex,:) = [];
+    TF_vortex = SAOZ_CF_MERRA2_EWS.MERRA2_sPV_at_Theta490 >= 1.4e-4; % if we want remove measurements within vortex
+    SAOZ_CF_MERRA2_EWS(TF_vortex,:) = [];
+    
+    TF_vortex = SAOZ_V3_reformat_MERRA2_EWS.MERRA2_sPV_at_Theta490 >= 1.4e-4; % if we want remove measurements within vortex
+    SAOZ_V3_reformat_MERRA2_EWS(TF_vortex,:) = [];
+   
+end
 
 %% use MERRA-2 as benchmark
 fig1 = figure;
@@ -66,12 +84,12 @@ for i =1:5
     boxplot(Table3.p_delta_o3, Table3.weather_median_ampm,'positions',x_location+(i-1)/10,'Widths',0.09,'Colors',color,'Symbol','','MedianStyle','target','Whisker',0);
     
     figure(fig2); % let's plot on fig2
-    bar(x_location+(i-1)/10,mean_delta_o3_table.numel_MERRA2_Ozone,'FaceColor',color,'BarWidth',0.08,'EdgeColor',[1 1 1]);
+    bar(x_location+(i-1)/10,mean_delta_o3_table.numel_delta_o3,'FaceColor',color,'BarWidth',0.08,'EdgeColor',[1 1 1]);
     
 end
 
 figure(fig1); % let's finish fig1 with labels and legend
-ylim([-10 8]);
+ylim([-10 10]);
 ylabel('TCO % difference (X - MERRA-2) [%]');
 xlabel('EWS reported weather');
 %legend('GBS','','GBS_C_F','','SAOZ','','SAOZ_C_F','','SAOZ_V_3');
@@ -80,7 +98,7 @@ rotateXLabels(gca,45);
 print_setting(size_fig,save_fig,['MERRA-2_vs_GBSandSAOZ_boxplots']);
 
 figure(fig2); % let's finish fig2 with labels and legend
-ylim([0 500]);
+ylim([0 610]);
 ylabel('Number of coincident measurements with MERRA-2');
 xticklabels(unique(Table3.weather_median_ampm));
 xlabel('EWS reported weather');
@@ -149,7 +167,7 @@ for i =1:5
     
 end
 figure(fig1); % let's finish fig1 with labels and legend
-ylim([-10 8]);
+ylim([-10 10]);
 ylabel('TCO % difference (X - Brewer) [%]');
 xlabel('EWS reported weather');
 %legend('GBS','','GBS_C_F','','SAOZ','','SAOZ_C_F','','SAOZ_V_3');
@@ -158,7 +176,7 @@ rotateXLabels(gca,45);
 print_setting(size_fig,save_fig,['Brewer_vs_GBSandSAOZ_boxplots']);
 
 figure(fig2); % let's finish fig2 with labels and legend
-ylim([0 500]);
+ylim([0 610]);
 ylabel('Number of coincident measurements with Brewer');
 xticklabels(unique(Table3.weather_median_ampm));
 xlabel('EWS reported weather');
