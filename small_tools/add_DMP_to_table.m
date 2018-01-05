@@ -7,7 +7,7 @@ load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews_2017_high_quali
 % note that we have DMP information within MERRA2 table, this new MERRA-2
 % table can be produced with "make_MERRA2_table_TCO_PWV_column_multi_years"
 
-lists_of_tables = {'GBS_Brewer_EWS','SAOZ_Brewer_EWS','GBS_MERRA2_EWS','SAOZ_MERRA2_EWS','GBS_CF_MERRA2_EWS','SAOZ_CF_MERRA2_EWS'};
+lists_of_tables = {'GBS_Brewer_EWS','SAOZ_Brewer_EWS','GBS_MERRA2_EWS','SAOZ_MERRA2_EWS','GBS_CF_MERRA2_EWS','SAOZ_CF_MERRA2_EWS', 'SAOZ_V3_reformat_MERRA2_EWS'};
 %lists_of_tables = {'GBS_MERRA2_EWS'};
 
 for i =1:numel(lists_of_tables)
@@ -20,8 +20,8 @@ for i =1:numel(lists_of_tables)
            data.MERRA2_sPV_at_Theta490(j,1) = MERRA2.sPV_at_Theta490(idx,1);
        else
            disp('Warning: not matching DMP record was found for a timestamp in the given table');
-           data.MERRA2_Theta490K_heigt(j,1) = 'NaN';
-           data.MERRA2_sPV_at_Theta490(j,1) = 'NaN';
+           data.MERRA2_Theta490K_heigt(j,1) = NaN;
+           data.MERRA2_sPV_at_Theta490(j,1) = NaN;
        end
         
     end
