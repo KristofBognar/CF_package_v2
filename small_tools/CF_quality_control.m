@@ -1,6 +1,6 @@
 function CF_quality_control()
 % this function is a test, which can perform some QC for CF datasets
-load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews');
+load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews_2017');
 
 datasets = {'GBS_Brewer_EWS','GBS_CF_Brewer_EWS','SAOZ_Brewer_EWS','SAOZ_CF_Brewer_EWS', ...
     'GBS_MERRA2_EWS','GBS_CF_MERRA2_EWS','SAOZ_MERRA2_EWS','SAOZ_CF_MERRA2_EWS',};
