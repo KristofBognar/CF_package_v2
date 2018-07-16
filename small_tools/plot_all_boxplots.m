@@ -4,13 +4,22 @@ function plot_all_boxplots()
 size_fig = 1/2;
 save_fig = 1;
 DMP_filter = false; % if use DMP filter, measurements with vortex abouve Eureka will be removed!
+use_SAOZ_V3_NDACC_SZArange = false; % if use SAOZ V3 processed with NDACC SZA range (86-91)
 
-addpath('E:\F\Work\MatlabCode');
+%addpath('E:\F\Work\MatlabCode');
+addpath('C:\Users\ZhaoX\Documents\MATLAB\matlab');
 %load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews');
 %load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews_2017'); % this version of data extended to 2017
-load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews_2017_high_quality_dmp.mat'); % this version of data extended to 2017
+%load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews_2017_high_quality_dmp.mat'); % this version of data extended to 2017
+load('C:\Users\ZhaoX\Documents\paper\CF\fig_old\gbs_saoz_brewer_merra2_ews_2017_high_quality_dmp.mat');% this version of data extended to 2017
+
+if use_SAOZ_V3_NDACC_SZArange == true
+    load('C:\Projects\SAOZ\SAOZ_V3_NDACC_SZA_reformat_MERRA2_Brewer_EWS.mat');
+end
 SAOZ_V3_reformat_MERRA2_EWS(isnan(SAOZ_V3_reformat_MERRA2_EWS.mean_vcd),:) = [];
 SAOZ_V3_reformat_Brewer_EWS(isnan(SAOZ_V3_reformat_Brewer_EWS.mean_vcd),:) = [];
+
+SAOZ_V3_reformat_Brewer_EWS(isnan(SAOZ_V3_reformat_Brewer_EWS.SAOZ_V3_mean_vcd),:) = [];
 
 if DMP_filter
     TF_vortex = GBS_MERRA2_EWS.MERRA2_sPV_at_Theta490 >= 1.4e-4; % if we want remove measurements within vortex
