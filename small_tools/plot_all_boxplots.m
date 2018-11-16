@@ -4,6 +4,7 @@ function plot_all_boxplots()
 size_fig = 1/2;
 save_fig = 1;
 DMP_filter = false; % if use DMP filter, measurements with vortex abouve Eureka will be removed!
+SZA_filter = true; % if true, only use SZA <=85 (summer data type)
 
 addpath('E:\F\Work\MatlabCode');
 %load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews');
@@ -62,10 +63,21 @@ for i =1:5
         tco_y = 'MERRA2_Ozone';
         color =[0.95, 0.5, 0.95];
     end
-    TF = strcmp(Table3.weather_median_ampm,'Clear') | strcmp(Table3.weather_median_ampm,'Mainly Clear') | strcmp(Table3.weather_median_ampm,'Mostly Cloudy') | strcmp(Table3.weather_median_ampm,'Cloudy') | strcmp(Table3.weather_median_ampm,'Ice Crystals') | strcmp(Table3.weather_median_ampm,'Rain') | strcmp(Table3.weather_median_ampm,'Snow');
+    
+   if i ~=5 % only use SZA filter for non SAOZ V3 data
+        if SZA_filter == true % the filter used to select only "summer" data
+            TF = Table3.sza_max >85;
+            Table3(TF,:) = [];
+        end
+    end
+        
+        
+    %TF = strcmp(Table3.weather_median_ampm,'Clear') | strcmp(Table3.weather_median_ampm,'Mainly Clear') | strcmp(Table3.weather_median_ampm,'Mostly Cloudy') | strcmp(Table3.weather_median_ampm,'Cloudy') | strcmp(Table3.weather_median_ampm,'Ice Crystals') | strcmp(Table3.weather_median_ampm,'Rain') | strcmp(Table3.weather_median_ampm,'Snow');
+    TF = strcmp(Table3.weather_median_ampm,'Clear') | strcmp(Table3.weather_median_ampm,'Mainly Clear') | strcmp(Table3.weather_median_ampm,'Mostly Cloudy') | strcmp(Table3.weather_median_ampm,'Cloudy') | strcmp(Table3.weather_median_ampm,'Ice Crystals');
     Table3(~TF,:) = [];
 
-    x_location = 1:7;
+    %x_location = 1:7;
+    x_location = 1:5;
     eval(['Table3.delta_o3 = (Table3.' tco_x '- Table3.MERRA2_Ozone);']);
     eval(['Table3.p_delta_o3 = 100.*(Table3.' tco_x '- Table3.MERRA2_Ozone)./Table3.' tco_y ';']);
     Table3 = sortrows(Table3,'weather_median_ampm','ascend');
@@ -141,10 +153,20 @@ for i =1:5
         tco_y = 'mean_ColumnO3';
         color =[0.95, 0.5, 0.95];
     end
-    TF = strcmp(Table3.weather_median_ampm,'Clear') | strcmp(Table3.weather_median_ampm,'Mainly Clear') | strcmp(Table3.weather_median_ampm,'Mostly Cloudy') | strcmp(Table3.weather_median_ampm,'Cloudy') | strcmp(Table3.weather_median_ampm,'Ice Crystals') | strcmp(Table3.weather_median_ampm,'Rain') | strcmp(Table3.weather_median_ampm,'Snow');
+    
+    if i ~= 5 % only use SZA filter for non SAOZ V3 data
+        if SZA_filter == true % the filter used to select only "summer" data
+            TF = Table3.sza_max >85;
+            Table3(TF,:) = [];
+        end
+    end
+    
+    %TF = strcmp(Table3.weather_median_ampm,'Clear') | strcmp(Table3.weather_median_ampm,'Mainly Clear') | strcmp(Table3.weather_median_ampm,'Mostly Cloudy') | strcmp(Table3.weather_median_ampm,'Cloudy') | strcmp(Table3.weather_median_ampm,'Ice Crystals') | strcmp(Table3.weather_median_ampm,'Rain') | strcmp(Table3.weather_median_ampm,'Snow');
+    TF = strcmp(Table3.weather_median_ampm,'Clear') | strcmp(Table3.weather_median_ampm,'Mainly Clear') | strcmp(Table3.weather_median_ampm,'Mostly Cloudy') | strcmp(Table3.weather_median_ampm,'Cloudy') | strcmp(Table3.weather_median_ampm,'Ice Crystals');
     Table3(~TF,:) = [];
 
-    x_location = 1:7;
+    %x_location = 1:7;
+    x_location = 1:5;
     eval(['Table3.delta_o3 = (Table3.' tco_x '- Table3.mean_ColumnO3);']);
     eval(['Table3.p_delta_o3 = 100.*(Table3.' tco_x '- Table3.mean_ColumnO3)./Table3.' tco_y ';']);
     Table3 = sortrows(Table3,'weather_median_ampm','ascend');
