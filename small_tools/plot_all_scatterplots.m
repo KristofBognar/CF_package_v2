@@ -2,16 +2,18 @@ function output = plot_all_scatterplots()
 % this function is used to plot all scatterplots between differen pairs of
 % measurements/model. It gives multi-scatter plots in different weather
 % conditions
-save_fig = 1;
+save_fig = 0;
+SZA_selection = true;% set to ture, if we want to only use summer data (SZA<=85)
 DU = 2.6870e+16;
-plot_path = 'E:\H\work\Eureka\GBS\CI\archive\sactter_plots\temp\';
+plot_path = 'E:\H\work\Eureka\GBS\CI\archive\sactter_plots\simple_6_weather\';
 %load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews');
 load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews_2017_high_quality_dmp.mat');% this dataset extend to 2017, and single measurement has been filtered
 addpath('E:\F\Work\MatlabCode');
 
 cd(plot_path);
 % make groups of weather types we are interested
-weather_types = {'All','Clear','Cloudy','Mainly Clear','Mostly Cloudy','Ice Crystals','Rain','Snow'};
+%weather_types = {'All','Clear','Cloudy','Mainly Clear','Mostly Cloudy','Ice Crystals','Rain','Snow'};
+weather_types = {'All','Clear','Cloudy','Mainly Clear','Mostly Cloudy','Ice Crystals'};
 % make groups of instrument/model pairs we are interested
 instrument_pairs = {'GBS_Brewer_EWS','GBS_CF_Brewer_EWS','SAOZ_Brewer_EWS','SAOZ_CF_Brewer_EWS', ...
     'SAOZ_V3_reformat_Brewer_EWS','GBS_MERRA2_EWS','GBS_CF_MERRA2_EWS','SAOZ_MERRA2_EWS',...
@@ -23,12 +25,21 @@ output = table;
 for i = 1:numel(instrument_pairs)
 
     for j = 1:numel(weather_types)
-        h_all(j) = subplot(4,2,j); % ax for subplot
+        %h_all(j) = subplot(4,2,j); % ax for subplot
+        h_all(j) = subplot(3,2,j); % ax for subplot
     end
     
     for j = 1:numel(weather_types)
         
         eval(['data = ' cell2mat(instrument_pairs(i)) ';']); % assign the data we will use
+        
+        try
+            if SZA_selection == true % if we want to only use summer data
+                TF_SZA = data.sza_max <=85;
+                data(~TF_SZA,:) = [];
+            end
+        catch
+        end
         
         if ~strcmp('All',weather_types(j)) % if not intend to plot all weather condition together
             TF = strcmp(data.weather_median_ampm,weather_types(j));% let's filter data by weather type
@@ -73,7 +84,8 @@ for i = 1:numel(instrument_pairs)
         
         % make some scatter plots, and give outputs of R, Number of
         % measurements, intercepts, and slop
-        [R,N,k_1,intercept_1,k_2] = generic_scatter(x,y,x_label,y_label,weather_types(j),save_fig);
+        %[R,N,k_1,intercept_1,k_2] = generic_scatter(x,y,x_label,y_label,weather_types(j),save_fig);
+        [R,RL,RU,N,k_1,intercept_1,k_2] = generic_scatter(x,y,x_label,y_label,weather_types(j),save_fig);
         h1_scatter = gca;
         copyobj(allchild(h1_scatter),h_all(j));
         xlabel(h_all(j),[x_label '_.']);
@@ -84,6 +96,8 @@ for i = 1:numel(instrument_pairs)
         close(gcf);
         % prepare a structure to be saved in output table
         st.R = R; % correlation coef
+        st.RL = RL; % correlation coef
+        st.RU = RU; % correlation coef
         st.N = N; % number of measurements
         st.k_1 = k_1; % slop of "y = a*x + b" fitting
         st.intercept_1 = intercept_1; % intercept of "y = a*x + b" fitting
@@ -109,8 +123,14 @@ plot_scatter_status(output,'k_1',save_fig);
 plot_scatter_status(output,'intercept_1',save_fig);
 plot_scatter_status(output,'k_2',save_fig);
 %% this is a generic scatter plots will be used for differen inputs
-function [R,N,k_1,intercept_1,k_2] = generic_scatter(x,y,x_label,y_label,weather_type,save_fig)
+function [R,RL,RU,N,k_1,intercept_1,k_2] = generic_scatter(x,y,x_label,y_label,weather_type,save_fig)
 save_fig = 0;
+[R,P,RL,RU] = corrcoef(x,y);
+try
+    RL = RL(1,2);
+    RU = RU(1,2);
+catch
+end
 [R,N,k_1,intercept_1,k_2] = linear_fits(x,y);
 xlim([200 600]);
 ylim([200 600]);
@@ -131,10 +151,20 @@ for i =1:numel(column_nms)
     for j = 1:numel(row_nms)
         row_nm = cell2mat(row_nms(j));
         eval([fitting_parameter '(i,j) = output.' column_nm '({''' row_nm '''},:).' fitting_parameter ';']);
+        if strcmp(fitting_parameter , 'R')
+            eval(['R_RL(i,j) = output.' column_nm '({''' row_nm '''},:).RL ;']); 
+            eval(['R_RU(i,j) = output.' column_nm '({''' row_nm '''},:).RU ;']);
+            R_err(i,j) = abs(R_RU(i,j) - R_RL(i,j))./2;
+        end
     end
     x = 1:numel(row_nms);
     eval(['y =' fitting_parameter]);
-    plot(x,y(i,:),'.-');
+    if strcmp(fitting_parameter , 'R')
+        y_err = R_err;
+        errorbar(x+(i-1)/15,y(i,:),y_err(i,:));
+    else
+        plot(x,y(i,:),'.-');
+    end
 end
 xticks(x);
 %xticklabels({'Clear','Cloudy','Mainly Clear','Mostly Cloudy','Ice Crystals','Rain','Snow'});
