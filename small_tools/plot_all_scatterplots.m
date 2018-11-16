@@ -5,10 +5,17 @@ function output = plot_all_scatterplots()
 save_fig = 0;
 SZA_selection = true;% set to ture, if we want to only use summer data (SZA<=85)
 DU = 2.6870e+16;
+<<<<<<< HEAD
 plot_path = 'E:\H\work\Eureka\GBS\CI\archive\sactter_plots\simple_6_weather\';
+=======
+%plot_path = 'E:\H\work\Eureka\GBS\CI\archive\sactter_plots\temp\';
+plot_path = 'C:\Users\ZhaoX\Documents\paper\CF\fig\8\correct_R_err\'
+>>>>>>> 9c567d2b8098d9e72b19f808355ec668eb934e13
 %load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews');
-load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews_2017_high_quality_dmp.mat');% this dataset extend to 2017, and single measurement has been filtered
-addpath('E:\F\Work\MatlabCode');
+%load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews_2017_high_quality_dmp.mat');% this dataset extend to 2017, and single measurement has been filtered
+load('C:\Users\ZhaoX\Documents\paper\CF\fig\gbs_saoz_brewer_merra2_ews_2017_high_quality_dmp.mat');
+%addpath('E:\F\Work\MatlabCode');
+addpath('C:\Users\ZhaoX\Documents\MATLAB\matlab\');
 
 cd(plot_path);
 % make groups of weather types we are interested
@@ -84,7 +91,10 @@ for i = 1:numel(instrument_pairs)
         
         % make some scatter plots, and give outputs of R, Number of
         % measurements, intercepts, and slop
+<<<<<<< HEAD
         %[R,N,k_1,intercept_1,k_2] = generic_scatter(x,y,x_label,y_label,weather_types(j),save_fig);
+=======
+>>>>>>> 9c567d2b8098d9e72b19f808355ec668eb934e13
         [R,RL,RU,N,k_1,intercept_1,k_2] = generic_scatter(x,y,x_label,y_label,weather_types(j),save_fig);
         h1_scatter = gca;
         copyobj(allchild(h1_scatter),h_all(j));
@@ -96,8 +106,13 @@ for i = 1:numel(instrument_pairs)
         close(gcf);
         % prepare a structure to be saved in output table
         st.R = R; % correlation coef
+<<<<<<< HEAD
         st.RL = RL; % correlation coef
         st.RU = RU; % correlation coef
+=======
+        st.RL = RL; % Lower bound for correlation coefficient
+        st.RU = RU; % Upper bound for correlation coefficient
+>>>>>>> 9c567d2b8098d9e72b19f808355ec668eb934e13
         st.N = N; % number of measurements
         st.k_1 = k_1; % slop of "y = a*x + b" fitting
         st.intercept_1 = intercept_1; % intercept of "y = a*x + b" fitting
@@ -114,7 +129,7 @@ for i = 1:numel(instrument_pairs)
         eval(['output.' instrument_pair '({''' weather_type  '''},1)= st;']);% make table use weather type as row and instrument
         %pair as column
     end
-    print_setting('XL',save_fig,[y_label '_vs_' x_label '_all_merged' ]);
+    print_setting(1,save_fig,[y_label '_vs_' x_label '_all_merged' ]);
     close all;
 end
 plot_scatter_status(output,'R',save_fig);
@@ -125,6 +140,7 @@ plot_scatter_status(output,'k_2',save_fig);
 %% this is a generic scatter plots will be used for differen inputs
 function [R,RL,RU,N,k_1,intercept_1,k_2] = generic_scatter(x,y,x_label,y_label,weather_type,save_fig)
 save_fig = 0;
+<<<<<<< HEAD
 [R,P,RL,RU] = corrcoef(x,y);
 try
     RL = RL(1,2);
@@ -132,6 +148,18 @@ try
 catch
 end
 [R,N,k_1,intercept_1,k_2] = linear_fits(x,y);
+=======
+%[R,N,k_1,intercept_1,k_2] = linear_fits(x,y);
+[intercept,slop,slop_nlm,mdl_lm,mdl_nlm] = line_fits(x,y);
+[R,P,RL,RU] = corrcoef(x,y);
+R = R(1,2);
+RL = RL(1,2);
+RU = RU(1,2);
+N = numel(x);
+k_1 = slop;
+intercept_1 = intercept;
+k_2 = slop_nlm;
+>>>>>>> 9c567d2b8098d9e72b19f808355ec668eb934e13
 xlim([200 600]);
 ylim([200 600]);
 xlabel([x_label ' TCO [DU]']);
@@ -174,4 +202,6 @@ legend(legend_str);
 ylabel(fitting_parameter);
 
 print_setting(1/2,save_fig,[fitting_parameter]);
+
+
 
