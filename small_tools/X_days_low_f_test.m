@@ -15,11 +15,11 @@ datapath = ['E:\H\work\Eureka\GBS\CI\archive\uncertainty\'];
 %load([datapath 'compare.mat']);
 %load('E:\H\work\Eureka\GBS\CI\weather_impact_v2\GBS_Brewer_MERRA2');
 %load('GBS_VCD_2010_2017_MERRA2_2010_2015_EWS.mat');
-load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews_2017_high_quality.mat');
+load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews_2017_high_quality_dmp.mat');
 
 
-weather_types = {'All'};
-%weather_types = {'Clear & Mainly Clear'};
+%weather_types = {'All'};
+weather_types = {'Clear & Mainly Clear'};
 % make groups of instrument/model pairs we are interested
 instrument_pairs = {'GBS_Brewer_EWS','GBS_CF_Brewer_EWS','SAOZ_Brewer_EWS','SAOZ_CF_Brewer_EWS', ...
     'SAOZ_V3_reformat_Brewer_EWS','GBS_MERRA2_EWS','GBS_CF_MERRA2_EWS','SAOZ_MERRA2_EWS',...
