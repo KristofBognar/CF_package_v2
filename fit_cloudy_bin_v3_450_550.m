@@ -129,14 +129,26 @@ data_output.cloudy(TF_SZA,:) = data.cloudy;
 %% plots
 if sum(TF_SZA) > 0
 figure;hold all;
-plot(beta,p2*100,'.-');
-plot(beta,p3*100,'.-');
-plot(beta,p4*100,'.-');
-plot(beta,p*100,'.-');
+plot(beta,p2*100,'.-');% clear
+plot(beta,p3*100,'.-');% mediocre
+plot(beta,p4*100,'.-');% cloudy
+f_gaus = fit(beta',(p*100)','gauss1'); % perform gauss fit for cloudy box
+plot(f_gaus,beta',p*100','--');% 'cloudy-box' and its 'gauss fit'
+Beta_gauss = f_gaus.b1;% the gauss beta
+errs_gauss1 = confint(f_gaus);
+err_gauss1 = errs_gauss1(2,2) - errs_gauss1(1,2);
+x = [Beta_gauss;Beta_gauss];
+y = [0;100];
+b = [err_gauss1;err_gauss1];
+boundedline(x,y,b,'alpha','orientation', 'horiz','cmap', [0.2, 0.2, 0.2]);
+x = [beta_max;beta_max];
+plot(x,y,'--');
 xlabel('\beta');
 ylabel('% of measurements');
 textbp(['Estimated \beta = ' num2str(beta_max)]);
-legend('clear','mediocre','cloudy','cloudy-box');
+textbp(['\beta (gauss)= ' num2str(Beta_gauss) ' ' char(177) ' ' num2str(err_gauss1)]);
+%legend('clear','mediocre','cloudy','cloudy-box');
+legend('clear','mediocre','cloudy','cloudy-box','gauss fit','\beta (gauss) 95%','\beta (gauss)','\beta');
 print_setting(fig_size, save_fig, ['Beta_estimation']);
 
 
