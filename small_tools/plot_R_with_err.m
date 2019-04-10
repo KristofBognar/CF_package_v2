@@ -1,11 +1,10 @@
-function plot_R_with_err(output)
+function plot_R_with_err()
 %% this is a function to plot scatter fitting parameters with error bars
 % this function need to read in the output from "output = plot_all_scatterplots()"
 
 save_fig = 0;
 fitting_parameter = 'R';
-load('scatter_status.mat');
-output = output_sixweather;
+load('C:\Users\ZhaoX\Documents\paper\CF\fig\6-8\no_2017_spring\scatter_status_no_icecrystal.mat');
 column_nms = output.Properties.VariableNames;
 row_nms = output.Properties.RowNames;
 figure;hold all;

@@ -27,15 +27,15 @@ end
 
 SZA = outputmap.SZA;
 
-figure; hold all;
-plot(SZA,data.wv360./data.wv550);
-plot(SZA,data.wv405./data.wv550);
+%figure; hold all;
+% plot(SZA,data.wv360./data.wv550);
+% plot(SZA,data.wv405./data.wv550);
 plot(SZA,data.wv450./data.wv550);
-plot(SZA,data.wv490./data.wv550);
-legend('360/550 nm','405/550 nm','450/550 nm','490/550 nm');
+% plot(SZA,data.wv490./data.wv550);
+%legend('360/550 nm','405/550 nm','450/550 nm','490/550 nm');
 xlabel('SZA');
 ylabel('CI');cd(plot_path);
-print_setting(fig_size, save_fig, ['RTM_CI_vs_SZA' simulation_type '_highlights']);
+%print_setting(fig_size, save_fig, ['RTM_CI_vs_SZA' simulation_type '_highlights']);
 
 %% output
 model = table;

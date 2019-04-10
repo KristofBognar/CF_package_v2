@@ -1,4 +1,4 @@
-function output = plot_all_scatterplots()
+function output = plot_all_scatterplots_6weather()
 % this function is used to plot all scatterplots between differen pairs of
 % measurements/model. It gives multi-scatter plots in different weather
 % conditions
@@ -6,7 +6,7 @@ save_fig = 1;
 DU = 2.6870e+16;
 %plot_path = 'E:\H\work\Eureka\GBS\CI\archive\sactter_plots\temp\';
 %plot_path = 'C:\Users\ZhaoX\Documents\paper\CF\fig\8\correct_R_err\'
-plot_path = 'C:\Users\ZhaoX\Documents\paper\CF\fig\8\no_2017_spring\';
+plot_path = 'C:\Users\ZhaoX\Documents\paper\CF\fig\6-8\no_2017_spring\';
 %load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews');
 %load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews_2017_high_quality_dmp.mat');% this dataset extend to 2017, and single measurement has been filtered
 %load('C:\Users\ZhaoX\Documents\paper\CF\fig\gbs_saoz_brewer_merra2_ews_2017_high_quality_dmp.mat');
@@ -16,7 +16,8 @@ addpath('C:\Users\ZhaoX\Documents\MATLAB\matlab\');
 
 cd(plot_path);
 % make groups of weather types we are interested
-weather_types = {'All','Clear','Cloudy','Mainly Clear','Mostly Cloudy','Ice Crystals','Rain','Snow'};
+%weather_types = {'All','Clear','Cloudy','Mainly Clear','Mostly Cloudy','Ice Crystals','Rain','Snow'};
+weather_types = {'All','Clear','Cloudy','Mainly Clear','Mostly Cloudy','Ice Crystals'};
 % make groups of instrument/model pairs we are interested
 instrument_pairs = {'GBS_Brewer_EWS','GBS_CF_Brewer_EWS','SAOZ_Brewer_EWS','SAOZ_CF_Brewer_EWS', ...
     'SAOZ_V3_reformat_Brewer_EWS','GBS_MERRA2_EWS','GBS_CF_MERRA2_EWS','SAOZ_MERRA2_EWS',...
@@ -28,8 +29,23 @@ output = table;
 for i = 1:numel(instrument_pairs)
 
     for j = 1:numel(weather_types)
-        h_all(j) = subplot(4,2,j); % ax for subplot
+        %h_all(j) = subplot(4,2,j); % ax for subplot
+        h_all(j) = subplot(3,2,j); % ax for subplot
+        if j == 1
+            text(220,570,'(a)');
+        elseif j == 2
+            text(220,570,'(b)');
+        elseif j == 3
+            text(220,570,'(c)');
+        elseif j == 4
+            text(220,570,'(d)');
+        elseif j == 5
+            text(220,570,'(e)');
+        elseif j == 6
+            text(220,570,'(f)');
+        end
     end
+
     
     for j = 1:numel(weather_types)
         
@@ -58,13 +74,13 @@ for i = 1:numel(instrument_pairs)
             x = data.mean_vcd./DU; % this is GBS,GBS_CF,SAOZ,and SAOZ_CF ozone column
             if contains( cell2mat(instrument_pairs(i)) , 'GBS') % if we want compare with GBS data
                 if contains( cell2mat(instrument_pairs(i)) , 'CF')
-                    x_label = 'GBS_C_F';
+                    x_label = 'UT-GBS_C_S';
                 else
-                    x_label = 'GBS';
+                    x_label = 'UT-GBS';
                 end
             elseif contains( cell2mat(instrument_pairs(i)) , 'SAOZ') % if we want compare with GBS data
                 if contains( cell2mat(instrument_pairs(i)) , 'CF')
-                    x_label = 'SAOZ_C_F';
+                    x_label = 'SAOZ_C_S';
                 else
                     x_label = 'SAOZ';
                 end
@@ -107,6 +123,9 @@ for i = 1:numel(instrument_pairs)
         eval(['output.' instrument_pair '({''' weather_type  '''},1)= st;']);% make table use weather type as row and instrument
         %pair as column
     end
+    [ax1,h1]=suplabel('TCO [DU]');
+    [ax2,h2]=suplabel('TCO [DU]','y');
+    [ax4,h3]=suplabel([y_label ' vs. ' x_label ]  ,'t');
     print_setting(1,save_fig,[y_label '_vs_' x_label '_all_merged' ]);
     close all;
 end
@@ -119,7 +138,7 @@ plot_scatter_status(output,'k_2',save_fig);
 function [R,RL,RU,N,k_1,intercept_1,k_2] = generic_scatter(x,y,x_label,y_label,weather_type,save_fig)
 save_fig = 0;
 %[R,N,k_1,intercept_1,k_2] = linear_fits(x,y);
-[intercept,slop,slop_nlm,mdl_lm,mdl_nlm] = line_fits(x,y);
+[intercept,slop,slop_nlm,mdl_lm,mdl_nlm] = line_fits_fixed_txt(x,y);
 [R,P,RL,RU] = corrcoef(x,y);
 R = R(1,2);
 RL = RL(1,2);
@@ -160,6 +179,27 @@ legend(legend_str);
 ylabel(fitting_parameter);
 
 print_setting(1/2,save_fig,[fitting_parameter]);
+
+
+function [intercept,slop,slop_nlm,mdl_lm,mdl_nlm] = line_fits_fixed_txt(x,y)
+
+mdl_lm = fitlm(x,y);
+
+myfun = @(b,x)b(1)*x;
+beta =[1];
+mdl_nlm = fitnlm(x,y,myfun,beta);
+figure;hold all;
+plot(x,y,'.','Color',[0.5 0.5 0.5]);
+plot(x,predict(mdl_lm,x),'color',[0 0.45 0.74]);
+plot(x,predict(mdl_nlm,x),'color',[0.9 0.1 0.5]);
+plot(x,x,'k--');
+intercept = mdl_lm.Coefficients.Estimate(1);
+slop = mdl_lm.Coefficients.Estimate(2);
+slop_nlm = mdl_nlm.Coefficients.Estimate(1);
+text(500, 350,['N = ' num2str(numel(x))]);
+text(500, 310,['R = ' num2str(round(corr(x,y),3))]);
+text(500, 270,['y = ' num2str(round(slop_nlm,3)) '*x'],'color',[0.9 0.1 0.5]);
+text(400, 230,['y = ' num2str(round(slop,3)) '*x + ' num2str(round(intercept,3))],'color',[0 0.45 0.74]);
 
 
 

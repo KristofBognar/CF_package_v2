@@ -3,9 +3,11 @@ function output = reformat_SAOZ_V3()
 % type table, which can be used in function such as "pair_MERRA2_GBS" and
 % "weather_impact_MERRA2"
 
-load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews');
+%load('E:\H\work\Eureka\GBS\CI\archive\gbs_saoz_brewer_merra2_ews');
+load('C:\Projects\SAOZ\SAOZ_V3_NDACC_SZA.mat');
 
-data = SAOZ_V3;
+%data = SAOZ_V3;
+data = O3all;
 output = table;
 am_offset = 14;
 pm_offset = 22;
