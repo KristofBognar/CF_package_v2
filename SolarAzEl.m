@@ -1,4 +1,4 @@
-function [Az El] = SolarAzEl(UTC,Lat,Lon,Alt)
+function [Az, El] = SolarAzEl(UTC,Lat,Lon,Alt)
 %% Revision History:
 % Programed by Darin C. Koblick 2/17/2009
 %
